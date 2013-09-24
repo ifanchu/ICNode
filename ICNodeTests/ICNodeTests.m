@@ -7,6 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import "ICNode.h"
 
 @interface ICNodeTests : XCTestCase
 
@@ -26,9 +27,18 @@
     [super tearDown];
 }
 
-- (void)testExample
+- (void)testCreateRootNode
 {
-    XCTFail(@"No implementation for \"%s\"", __PRETTY_FUNCTION__);
-}
+    // create a root node
+    ICNode *root = [[ICNode alloc] initWithData:@"root" withParent:nil];
+    // assert it is a root: parent is nil
+    XCTAssertTrue(root.isRoot);
+    XCTAssertNil(root.parent);
+    // create a node whose parent is root
+    ICNode *node1 = [[ICNode alloc] initWithData:@"node1" withParent:root];
+    XCTAssertFalse(node1.isRoot);       // assert it is not root
+    XCTAssertEqualObjects(node1.parent, root);          // assert its parent is root
+    XCTAssertEqual(root.children.count, (NSUInteger)1);             // assert root's children count is now 1
+} 
 
 @end
