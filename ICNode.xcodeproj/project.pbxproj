@@ -1,0 +1,424 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		055FB00817F1E05B00E55421 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 055FB00717F1E05B00E55421 /* Foundation.framework */; };
+		055FB00D17F1E05B00E55421 /* ICNode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 055FB00C17F1E05B00E55421 /* ICNode.h */; };
+		055FB00F17F1E05B00E55421 /* ICNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 055FB00E17F1E05B00E55421 /* ICNode.m */; };
+		055FB01617F1E05B00E55421 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 055FB01517F1E05B00E55421 /* XCTest.framework */; };
+		055FB01717F1E05B00E55421 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 055FB00717F1E05B00E55421 /* Foundation.framework */; };
+		055FB01917F1E05B00E55421 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 055FB01817F1E05B00E55421 /* UIKit.framework */; };
+		055FB01C17F1E05B00E55421 /* libICNode.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 055FB00417F1E05B00E55421 /* libICNode.a */; };
+		055FB02217F1E05B00E55421 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 055FB02017F1E05B00E55421 /* InfoPlist.strings */; };
+		055FB02417F1E05B00E55421 /* ICNodeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 055FB02317F1E05B00E55421 /* ICNodeTests.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		055FB01A17F1E05B00E55421 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 055FAFFC17F1E05B00E55421 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 055FB00317F1E05B00E55421;
+			remoteInfo = ICNode;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		055FB00217F1E05B00E55421 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+				055FB00D17F1E05B00E55421 /* ICNode.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		055FB00417F1E05B00E55421 /* libICNode.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libICNode.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		055FB00717F1E05B00E55421 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		055FB00B17F1E05B00E55421 /* ICNode-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ICNode-Prefix.pch"; sourceTree = "<group>"; };
+		055FB00C17F1E05B00E55421 /* ICNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ICNode.h; sourceTree = "<group>"; };
+		055FB00E17F1E05B00E55421 /* ICNode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICNode.m; sourceTree = "<group>"; };
+		055FB01417F1E05B00E55421 /* ICNodeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ICNodeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		055FB01517F1E05B00E55421 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		055FB01817F1E05B00E55421 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		055FB01F17F1E05B00E55421 /* ICNodeTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ICNodeTests-Info.plist"; sourceTree = "<group>"; };
+		055FB02117F1E05B00E55421 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		055FB02317F1E05B00E55421 /* ICNodeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICNodeTests.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		055FB00117F1E05B00E55421 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				055FB00817F1E05B00E55421 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		055FB01117F1E05B00E55421 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				055FB01617F1E05B00E55421 /* XCTest.framework in Frameworks */,
+				055FB01917F1E05B00E55421 /* UIKit.framework in Frameworks */,
+				055FB01717F1E05B00E55421 /* Foundation.framework in Frameworks */,
+				055FB01C17F1E05B00E55421 /* libICNode.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		055FAFFB17F1E05B00E55421 = {
+			isa = PBXGroup;
+			children = (
+				055FB00917F1E05B00E55421 /* ICNode */,
+				055FB01D17F1E05B00E55421 /* ICNodeTests */,
+				055FB00617F1E05B00E55421 /* Frameworks */,
+				055FB00517F1E05B00E55421 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		055FB00517F1E05B00E55421 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				055FB00417F1E05B00E55421 /* libICNode.a */,
+				055FB01417F1E05B00E55421 /* ICNodeTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		055FB00617F1E05B00E55421 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				055FB00717F1E05B00E55421 /* Foundation.framework */,
+				055FB01517F1E05B00E55421 /* XCTest.framework */,
+				055FB01817F1E05B00E55421 /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		055FB00917F1E05B00E55421 /* ICNode */ = {
+			isa = PBXGroup;
+			children = (
+				055FB00C17F1E05B00E55421 /* ICNode.h */,
+				055FB00E17F1E05B00E55421 /* ICNode.m */,
+				055FB00A17F1E05B00E55421 /* Supporting Files */,
+			);
+			path = ICNode;
+			sourceTree = "<group>";
+		};
+		055FB00A17F1E05B00E55421 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				055FB00B17F1E05B00E55421 /* ICNode-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		055FB01D17F1E05B00E55421 /* ICNodeTests */ = {
+			isa = PBXGroup;
+			children = (
+				055FB02317F1E05B00E55421 /* ICNodeTests.m */,
+				055FB01E17F1E05B00E55421 /* Supporting Files */,
+			);
+			path = ICNodeTests;
+			sourceTree = "<group>";
+		};
+		055FB01E17F1E05B00E55421 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				055FB01F17F1E05B00E55421 /* ICNodeTests-Info.plist */,
+				055FB02017F1E05B00E55421 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		055FB00317F1E05B00E55421 /* ICNode */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 055FB02717F1E05B00E55421 /* Build configuration list for PBXNativeTarget "ICNode" */;
+			buildPhases = (
+				055FB00017F1E05B00E55421 /* Sources */,
+				055FB00117F1E05B00E55421 /* Frameworks */,
+				055FB00217F1E05B00E55421 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ICNode;
+			productName = ICNode;
+			productReference = 055FB00417F1E05B00E55421 /* libICNode.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		055FB01317F1E05B00E55421 /* ICNodeTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 055FB02A17F1E05B00E55421 /* Build configuration list for PBXNativeTarget "ICNodeTests" */;
+			buildPhases = (
+				055FB01017F1E05B00E55421 /* Sources */,
+				055FB01117F1E05B00E55421 /* Frameworks */,
+				055FB01217F1E05B00E55421 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				055FB01B17F1E05B00E55421 /* PBXTargetDependency */,
+			);
+			name = ICNodeTests;
+			productName = ICNodeTests;
+			productReference = 055FB01417F1E05B00E55421 /* ICNodeTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		055FAFFC17F1E05B00E55421 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0500;
+				ORGANIZATIONNAME = "IFAN CHU";
+			};
+			buildConfigurationList = 055FAFFF17F1E05B00E55421 /* Build configuration list for PBXProject "ICNode" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 055FAFFB17F1E05B00E55421;
+			productRefGroup = 055FB00517F1E05B00E55421 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				055FB00317F1E05B00E55421 /* ICNode */,
+				055FB01317F1E05B00E55421 /* ICNodeTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		055FB01217F1E05B00E55421 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				055FB02217F1E05B00E55421 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		055FB00017F1E05B00E55421 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				055FB00F17F1E05B00E55421 /* ICNode.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		055FB01017F1E05B00E55421 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				055FB02417F1E05B00E55421 /* ICNodeTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		055FB01B17F1E05B00E55421 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 055FB00317F1E05B00E55421 /* ICNode */;
+			targetProxy = 055FB01A17F1E05B00E55421 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		055FB02017F1E05B00E55421 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				055FB02117F1E05B00E55421 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		055FB02517F1E05B00E55421 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		055FB02617F1E05B00E55421 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		055FB02817F1E05B00E55421 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/ICNode.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ICNode/ICNode-Prefix.pch";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		055FB02917F1E05B00E55421 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/ICNode.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ICNode/ICNode-Prefix.pch";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		055FB02B17F1E05B00E55421 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ICNode/ICNode-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "ICNodeTests/ICNodeTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		055FB02C17F1E05B00E55421 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ICNode/ICNode-Prefix.pch";
+				INFOPLIST_FILE = "ICNodeTests/ICNodeTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		055FAFFF17F1E05B00E55421 /* Build configuration list for PBXProject "ICNode" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				055FB02517F1E05B00E55421 /* Debug */,
+				055FB02617F1E05B00E55421 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		055FB02717F1E05B00E55421 /* Build configuration list for PBXNativeTarget "ICNode" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				055FB02817F1E05B00E55421 /* Debug */,
+				055FB02917F1E05B00E55421 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		055FB02A17F1E05B00E55421 /* Build configuration list for PBXNativeTarget "ICNodeTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				055FB02B17F1E05B00E55421 /* Debug */,
+				055FB02C17F1E05B00E55421 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 055FAFFC17F1E05B00E55421 /* Project object */;
+}
