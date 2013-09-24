@@ -51,6 +51,7 @@
 		055FB02317F1E05B00E55421 /* ICNodeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ICNodeTests.m; sourceTree = "<group>"; };
 		055FB02D17F1E07C00E55421 /* ICNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICNode.h; sourceTree = "<group>"; };
 		055FB02E17F1E07C00E55421 /* ICNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICNode.m; sourceTree = "<group>"; };
+		055FB06217F1E9C400E55421 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +80,7 @@
 		055FAFFB17F1E05B00E55421 = {
 			isa = PBXGroup;
 			children = (
+				055FB06217F1E9C400E55421 /* README.md */,
 				055FB00917F1E05B00E55421 /* ICNode */,
 				055FB01D17F1E05B00E55421 /* ICNodeTests */,
 				055FB00617F1E05B00E55421 /* Frameworks */,
