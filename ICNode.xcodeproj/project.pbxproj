@@ -80,11 +80,11 @@
 		055FAFFB17F1E05B00E55421 = {
 			isa = PBXGroup;
 			children = (
-				055FB06217F1E9C400E55421 /* README.md */,
 				055FB00917F1E05B00E55421 /* ICNode */,
 				055FB01D17F1E05B00E55421 /* ICNodeTests */,
 				055FB00617F1E05B00E55421 /* Frameworks */,
 				055FB00517F1E05B00E55421 /* Products */,
+				055FB06217F1E9C400E55421 /* README.md */,
 			);
 			sourceTree = "<group>";
 		};

@@ -10,3 +10,5 @@
 * Each node holds references to its parent, children and data
 * An ICNode, which is a node, but can also be considered as a subtree because each node knows its children
 * To mimic array-like functionality, all the traversal operation in ICNode is using <a href="http://en.wikipedia.org/wiki/Tree_traversal#Example">DFS pre-order traversal</a>
+* ICNode should have operations like adding child, moving child, deleting child to be performed like a tree by manipulating the sub-nodes around.
+* ICNode should have operations like querying, finding, sorting to be performed like an array
