@@ -9,4 +9,4 @@
 
 * Each node holds references to its parent, children and data
 * An ICNode, which is a node, but can also be considered as a subtree because each node knows its children
-* To mimic array-like functionality, all the traversal operation in ICNode is using DFS pre-order traversal
+* To mimic array-like functionality, all the traversal operation in ICNode is using <a href="http://en.wikipedia.org/wiki/Tree_traversal#Example">DFS pre-order traversal</a>
