@@ -33,7 +33,7 @@ count
 // an array of ICNode, the reason to use an NSArray is that we need the ordering of NSArray
 @property (nonatomic, strong) NSMutableArray *children;
 // An integer which indicates the index of this node in its parent's children array
-@property (nonatomic, strong) NSInteger indexOfParent;
+@property (nonatomic) int indexOfParent;
 
 #pragma mark - Initializers
 - (id)initWithData:(id)aData withParent:(ICNode *)aParent;
@@ -66,6 +66,11 @@ count
  */
 // @return The depth of this node; 0 if this node is root
 - (NSInteger)depth;
+/*
+ Check whether this node is the last child of its parent
+ */
+// @return true if this node is the last child of its parent
+- (BOOL)isLastChild;
 - (BOOL) hasNextSibling;
 - (BOOL) hasPreviousSibling;
 #pragma mark - Finding objects
@@ -149,7 +154,8 @@ count
 // @param toIndex: The index of ICNode which will be the parent of fromIndex node
 // @return BOOL: whether the moving operation is able to complete or not
 - (BOOL)moveNodeFromIndex:(NSInteger)fromIndex toIndex:(NSInteger)toIndex;
-
+- (BOOL)moveUp;
+- (BOOL)moveDown;
 #pragma mark - indentation
 - (BOOL)leftIndent;
 - (BOOL)rightIndent;
@@ -163,21 +169,22 @@ count
 /*
  Return a description of this ICNode but not its children
  */
+// @return an NSString with format: self.data(self.parent.data[indexOfParent])
 - (NSString *)description;
 /*
  Return a string which print the entire tree starts from this node just like Linux tree command does. Pring list view
 
- root
+root
 |-- 1
-|		|-- 2
-|		|		`-- 9
-|		`-- 3
+|   |-- 2
+|   |   `-- 9
+|   `-- 3
 |-- 4
-|		|-- 5
-|		|		`-- 10
-|		|				`-- 11
-|		|-- 6
-|		`-- 7
+|   |-- 5
+|   |   `-- 10
+|   |       `-- 11
+|   |-- 6
+|   `-- 7
 `-- 8
  */
 - (NSString *)printTree;

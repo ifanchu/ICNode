@@ -15,6 +15,7 @@
 		055FB02217F1E05B00E55421 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 055FB02017F1E05B00E55421 /* InfoPlist.strings */; };
 		055FB02417F1E05B00E55421 /* ICNodeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 055FB02317F1E05B00E55421 /* ICNodeTests.m */; };
 		055FB02F17F1E07C00E55421 /* ICNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 055FB02E17F1E07C00E55421 /* ICNode.m */; };
+		055FB06617F2A01F00E55421 /* ICUnitTestHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 055FB06517F2A01F00E55421 /* ICUnitTestHelper.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +53,8 @@
 		055FB02D17F1E07C00E55421 /* ICNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICNode.h; sourceTree = "<group>"; };
 		055FB02E17F1E07C00E55421 /* ICNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICNode.m; sourceTree = "<group>"; };
 		055FB06217F1E9C400E55421 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		055FB06417F2A01F00E55421 /* ICUnitTestHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICUnitTestHelper.h; sourceTree = "<group>"; };
+		055FB06517F2A01F00E55421 /* ICUnitTestHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICUnitTestHelper.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +133,8 @@
 			children = (
 				055FB02317F1E05B00E55421 /* ICNodeTests.m */,
 				055FB01E17F1E05B00E55421 /* Supporting Files */,
+				055FB06417F2A01F00E55421 /* ICUnitTestHelper.h */,
+				055FB06517F2A01F00E55421 /* ICUnitTestHelper.m */,
 			);
 			path = ICNodeTests;
 			sourceTree = "<group>";
@@ -233,6 +238,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				055FB02417F1E05B00E55421 /* ICNodeTests.m in Sources */,
+				055FB06617F2A01F00E55421 /* ICUnitTestHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
