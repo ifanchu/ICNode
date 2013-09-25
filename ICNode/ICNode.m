@@ -42,6 +42,10 @@
     return [self initWithData:@"root" withParent:nil];
 }
 
+- (id)initWithData:(id)aData
+{
+    return [self initWithData:aData withParent:nil];
+}
 
 #pragma mark - Querying the tree
 - (ICNode *)getRootNode
@@ -54,16 +58,15 @@
     return self.parent == nil;
 }
 
-// TODO: need implementation
-- (NSInteger)countOfChildrenOfSubtree
+// TODO: need test
+- (NSInteger)countOfAllChildren
 {
-    return -1;
+    return self.flatThisNode.count - 1;     // exclude self
 }
 
-// TODO: need implementation
-- (NSInteger)countOfChildren
+- (NSInteger)countOfImmediateChildren
 {
-    return -1;
+    return self.children.count;
 }
 
 - (BOOL)isLeaf
@@ -78,19 +81,23 @@
 
 - (BOOL)isLastChild
 {
-    return self.indexOfParent == self.parent.children.count-1;
+    return self.indexOfParent == self.parent.children.count - 1;
 }
 
-// TODO: need implementation
+// TODO: need test
 - (BOOL)hasNextSibling
 {
-    return NO;
+    if (self.isRoot)
+        return NO;          // root as no sibling
+    return !self.isLastChild;
 }
 
-// TODO: need implementation
+// TODO: need test
 - (BOOL)hasPreviousSibling
 {
-    return NO;
+    if (self.isRoot)
+        return NO;          // root as no sibling
+    return self.indexOfParent != 0;
 }
 
 #pragma mark - Finding objects
@@ -144,7 +151,7 @@
     return -1;
 }
 // TODO: need implementation
-- (NSInteger)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode
++ (NSInteger)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode
 {
     return -1;
 }
@@ -154,9 +161,30 @@
     return -1;
 }
 // TODO: need implementation
-- (NSInteger)addAsSiblingToNode:(NSInteger)targetNode withNode:(ICNode *)aNode
++ (NSInteger)addAsSiblingToNode:(NSInteger)targetNode withNode:(ICNode *)aNode
 {
     return -1;
+}
+
+// TODO: need test
+- (void)addAsChild:(ICNode *)aNode
+{
+    // check if aNode has parent, if yes, remove aNode from parent's children
+    if (aNode.parent) {
+        [aNode.parent.children removeObject:aNode];
+    }
+    aNode.parent = self;
+    [self.children addObject:aNode];
+    aNode.indexOfParent = self.children.count - 1;
+}
+
+// TODO: need test
+- (void)addAsSibling:(ICNode *)aNode
+{
+    if (self.isRoot)
+        return;      // can't add sibling to a root
+    // add aNode to its parent
+    [self.parent addAsChild:aNode];
 }
 
 #pragma mark - remove node from tree
@@ -271,5 +299,12 @@
     return result;
 }
 
-
+#pragma mark - custom setters
+- (void)setIndexOfParent:(int)index
+{
+    if (index < 0) {
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"indexOfParent can not be less than 0 as it represents an array index" userInfo:nil];
+    }
+    _indexOfParent = index;
+}
 @end

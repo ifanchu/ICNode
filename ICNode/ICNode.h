@@ -29,7 +29,7 @@ count
 // the object that represents the data stored in this node
 @property (nonatomic, strong) id data;
 // the ICNode which is the parent of this node
-@property (nonatomic, strong) ICNode *parent;
+@property (nonatomic, weak) ICNode *parent;
 // an array of ICNode, the reason to use an NSArray is that we need the ordering of NSArray
 @property (nonatomic, strong) NSMutableArray *children;
 // An integer which indicates the index of this node in its parent's children array
@@ -38,6 +38,7 @@ count
 #pragma mark - Initializers
 - (id)initWithData:(id)aData withParent:(ICNode *)aParent;
 - (id)initAsRootNode;
+- (id)initWithData:(id)aData;
 
 #pragma mark - Querying the tree
 /*
@@ -50,13 +51,13 @@ count
  */
 - (BOOL)isRoot;
 /*
- Return the total children count as of this ICNode is a subtree
+ Return the total children count including subtrees
  */
-- (NSInteger)countOfChildrenOfSubtree;
+- (NSInteger)countOfAllChildren;
 /*
  Return the count of the immediate children of this ICNode
  */
-- (NSInteger)countOfChildren;
+- (NSInteger)countOfImmediateChildren;
 /*
  Return whether this ICNode has no child
  */
@@ -118,7 +119,7 @@ count
 // @param aParent: The node which will become aNode's parent
 // @param aNode: an ICNode object
 // @return an integer indicates the final location of aNode; -1 if not able to add
-- (NSInteger)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode;
++ (NSInteger)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode;
 /*
  Add the given aNode as a sibling of the node at index.
  root can NOT have sibling, so return -1 if the target node is root
@@ -130,7 +131,11 @@ count
 // @param index: The node which will be aNode's immediate higher sibling
 // @param aNode: an ICNode object
 // @return an integer indicates the final location of aNode; -1 if not able to add
-- (NSInteger)addAsSiblingToNode:(NSInteger)targetNode withNode:(ICNode *)aNode;
++ (NSInteger)addAsSiblingToNode:(NSInteger)targetNode withNode:(ICNode *)aNode;
+
+- (void)addAsChild:(ICNode *)aNode;
+
+- (void)addAsSibling:(ICNode *)aNode;
 
 #pragma mark - remove node from tree
 /*

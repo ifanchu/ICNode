@@ -15,11 +15,13 @@
 @end
 
 @implementation ICNodeTests
-
+ICNode *sampleRoot;
 - (void)setUp
 {
     [super setUp];
     // Put setup code here. This method is called before the invocation of each test method in the class.
+    sampleRoot = [[ICNode alloc] initAsRootNode];
+    
 }
 
 - (void)tearDown
@@ -55,10 +57,11 @@
 
 - (void)testInitWithData
 {
-    int runs = 1000;
-    NSMutableArray *candidate = [[NSMutableArray alloc] init];
+    int runs = 10;
+    
     ICNode *root = [[ICNode alloc] initAsRootNode];
-    [candidate addObject:root];
+    XCTAssertEqual((int)root.flatThisNode.count, 1, @"There is only 1 node in root now");
+    NSMutableArray *candidate = [[NSMutableArray alloc] initWithArray:root.flatThisNode];
     
     for (; runs>0; runs--) {
         // choose 1 node from candidate array to be the root of this node
@@ -71,10 +74,39 @@
         XCTAssertTrue(thisNode.isLastChild, @"thisNode should be the last child of its parent");
         XCTAssertEqual((int)chosenRootChildrenCount+1, (int)chosenRoot.children.count, @"After adding a new node to chosenRoot, its children count should increase by 1");
         XCTAssertEqual(thisNode.depth, chosenRoot.depth+1, @"thisNode's depth %d should be chosenParent's depth %d + 1", thisNode.depth, chosenRoot.depth);
-        [candidate addObject:thisNode];
+        XCTAssertEqual(chosenRoot.countOfImmediateChildren, chosenRootChildrenCount+1, @"root's count of children");
+        candidate = [[NSMutableArray alloc] initWithArray:root.flatThisNode];
     }
-    NSLog(@"%@", [[root flatThisNode] description]);
-    NSLog(@"%@", root.printTree);
+//    NSLog(@"%@", [[root flatThisNode] description]);
+//    NSLog(@"%@", root.printTree);
+}
+
+#pragma mark - test adding
+
+- (void)testAddChild
+{
+    [sampleRoot addAsChild:[[ICNode alloc] initWithData:@"node1"]];
+    ICNode *node1 = [sampleRoot.children objectAtIndex:(sampleRoot.children.count-1)];
+    XCTAssertEqual([node1.data description], @"node1", @"node1's data is node1");
+    XCTAssertEqualObjects(node1.parent, sampleRoot, @"node1's parent is root");
+    XCTAssertEqual(node1.indexOfParent, 0, @"node1 is root's 1st children");
+    XCTAssertEqual(node1.depth, 1, @"node's depth is 1");
+    XCTAssertEqual(sampleRoot.countOfImmediateChildren, 1, @"root has only 1 child now");
+    XCTAssertTrue(node1.isLastChild, @"");
+    XCTAssertFalse(node1.hasNextSibling, @"");
+    XCTAssertFalse(node1.hasPreviousSibling, @"");
+    
+    [node1 addAsSibling:[[ICNode alloc] initWithData:@"node2"]];
+    ICNode *node2 = [sampleRoot.children objectAtIndex:(sampleRoot.children.count - 1)];
+    XCTAssertEqualObjects(node2.parent, sampleRoot, @"node2's parent is root");
+    XCTAssertEqual([node2.data description], @"node2", @"node2's data is node2");
+    XCTAssertEqual(sampleRoot.countOfImmediateChildren, 2, @"There are 2 children now");
+    XCTAssertEqual(node2.depth, 1, @"node2's depth is 1");
+    XCTAssertTrue(node2.isLastChild, @"");
+    XCTAssertTrue(node2.hasPreviousSibling, @"");
+    XCTAssertFalse(node2.hasNextSibling, @"");
+    
+    XCTAssertEqualObjects(node1.getRootNode, node2.getRootNode, @"node1 and node2 have the same root");
 }
 
 //- (void)testPrintTree
