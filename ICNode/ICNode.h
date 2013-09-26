@@ -70,23 +70,20 @@ count
 /*
  Check whether this node is the last child of its parent
  */
-// @return true if this node is the last child of its parent
+// @return true if this node is the last child of its parent; return YES for root
 - (BOOL)isLastChild;
 - (BOOL)isFirstChild;
-- (BOOL) hasNextSibling;
-- (BOOL) hasPreviousSibling;
+// @return true if that in this node's parent's children array, this node is not in position 0 and there is other node in front of him. In other words, this node is not its parent's first child
+- (BOOL) hasYoungerSibling;
+// @return true if that in this node's parent's children array, this node is not in the last position and there is other node behind it. In other words, this node is not its parent's last child.
+- (BOOL) hasOlderSibling;
 /*
  Check whether this node contains the given aNode
  */
-// @return YES if aNode can be found in the tree; NO otherwise
+// @return YES if aNode can be found in this sub-tree starting from this node; NO otherwise
 - (BOOL) contains:(ICNode *)aNode;
+
 #pragma mark - Finding objects
-/*
- Return the child at index using DFS pre-order traversal
- */
-// @param index: The index of the node
-// @return an ICNode at the index; nil if no such node
-- (ICNode *)getChildAtIndex:(NSInteger)index;
 /*
  Return the first child of this ICNode, must be the first ICNode in children array
  */
@@ -106,8 +103,8 @@ count
  Return the node which is the older sibling of this node which means the returned node is also in this node's parent children array but in the location right before this node
  */
  // @return The node in this node's parent children whose location is right before this node, if any; nil if no such node
-- (ICNode *)getPreviousSibling;
-- (ICNode *)getNextSibling;
+- (ICNode *)getOlderSibling;
+- (ICNode *)getYoungerSibling;
 /*
  Given an ICNode, try to find the index of it in this subtree
  Return -1 if not found
@@ -136,7 +133,7 @@ count
 // @param aNode: an ICNode object
 // @return an integer indicates the final location of aNode; -1 if not able to add
 // @throw NSInvalidArgumentException if aParent is not in this node
-+ (NSInteger)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode;
+- (NSInteger)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode;
 /*
  Add the given aNode as a sibling of the node at index.
  root can NOT have sibling, so return -1 if the target node is root
@@ -148,7 +145,7 @@ count
 // @param index: The node which will be aNode's immediate higher sibling
 // @param aNode: an ICNode object
 // @return an integer indicates the final location of aNode; -1 if not able to add
-+ (NSInteger)addAsSiblingToNode:(NSInteger)targetNode withNode:(ICNode *)aNode;
+- (NSInteger)addAsSiblingToNode:(ICNode *)targetNode withNode:(ICNode *)aNode;
 /*
  Add the given aNode as the last child to this node
  */

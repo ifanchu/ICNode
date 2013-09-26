@@ -80,7 +80,8 @@
 
 - (BOOL)isLastChild
 {
-    return (self.isRoot ? nil:(self.indexOfParent == self.parent.children.count - 1));
+    // TODO: what to do if this is root?
+    return (self.isRoot ? YES:(self.indexOfParent == self.parent.children.count - 1));
 }
 
 - (BOOL)isFirstChild
@@ -88,20 +89,18 @@
     return self.indexOfParent == 0;
 }
 
-// TODO: need test
-- (BOOL)hasNextSibling
+- (BOOL)hasYoungerSibling
 {
     if (self.isRoot)
         return NO;          // root as no sibling
     return !self.isLastChild;
 }
 
-// TODO: need test
-- (BOOL)hasPreviousSibling
+- (BOOL)hasOlderSibling
 {
     if (self.isRoot)
         return NO;          // root as no sibling
-    return self.indexOfParent > 0;
+    return !self.isFirstChild;      // first child does not have previous sibling
 }
 
 - (BOOL) contains:(ICNode *)aNode
@@ -111,13 +110,6 @@
 
 #pragma mark - Finding objects
 
-// TODO: need implementation
-- (ICNode *)getChildAtIndex:(NSInteger)index
-{
-    return nil;
-}
-
-// TODO: need test
 - (ICNode *)getFirstChild
 {
     if (self.children.count == 0)
@@ -125,7 +117,6 @@
     return [self.children objectAtIndex:0];
 }
 
-// TODO: need test
 - (ICNode *)getLastImmediateChild
 {
     if (self.children.count == 0)
@@ -133,7 +124,6 @@
     return [self.children objectAtIndex:(self.children.count - 1)];
 }
 
-// TODO: need test
 - (ICNode *)getLastChild
 {
     // if the last immediate child is a leaf, return it
@@ -143,23 +133,20 @@
     return self.getLastImmediateChild.getLastChild;
 }
 
-// TODO: need test
-- (ICNode *)getPreviousSibling
+- (ICNode *)getOlderSibling
 {
-    if (!self.hasPreviousSibling)
+    if (!self.hasYoungerSibling)
         return nil;
     return [self.parent.children objectAtIndex: self.indexOfParent - 1];
 }
 
-// TODO: need test
-- (ICNode *)getNextSibling
+- (ICNode *)getYoungerSibling
 {
-    if (!self.hasNextSibling)
+    if (!self.hasOlderSibling)
         return nil;
     return [self.parent.children objectAtIndex: self.indexOfParent + 1];
 }
 
-// TODO: need test
 - (NSInteger)indexOf:(ICNode *)aNode
 {
     if (![self contains:aNode])
@@ -184,8 +171,6 @@
 // TODO: need test
 - (NSInteger)addAsChildToIndex:(NSInteger)index withNode:(ICNode *)aNode
 {
-    if (![self checkIndexInBound:index])
-        return NSNotFound;
     ICNode *target = [self nodeAtIndex:index];
     if (!target)
         return NSNotFound;
@@ -193,7 +178,7 @@
     return [self indexOf:aNode];
 }
 // TODO: need test
-+ (NSInteger)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode
+- (NSInteger)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode
 {
     // first check if aParent is in this tree
     if ([self indexOf:aParent] == NSNotFound)
@@ -211,12 +196,12 @@
     return [self indexOf:aNode];
 }
 // TODO: need test
-+ (NSInteger)addAsSiblingToNode:(NSInteger)targetNode withNode:(ICNode *)aNode
+- (NSInteger)addAsSiblingToNode:(ICNode *)targetNode withNode:(ICNode *)aNode
 {
     if(![self contains:targetNode])
         return NSNotFound;
     [targetNode addAsSibling:aNode];
-    return self.indexOf(aNode);
+    return [self indexOf:aNode];
 }
 
 // TODO: need test
@@ -346,7 +331,7 @@
     }else{
         // if prev depth > self depth, this means there must be a previous sibling, move this node to be its child
         [self removeFromParent];
-        [[self getPreviousSibling] addAsChild: self];
+        [[self getOlderSibling] addAsChild: self];
     }
 
     return YES;
