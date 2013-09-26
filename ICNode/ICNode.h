@@ -113,7 +113,7 @@ count
 /*
  Return the node at the given index as per array view
  */
-// @return the node at index in array view relative to this node(the index of this node is 0)
+// @return the node at index in array view relative to this node(the index of this node is 0); nil if not found
 - (ICNode *)nodeAtIndex: (NSInteger)index;
 /*
  Return the index of this node relative to its root, if any
@@ -125,36 +125,37 @@ count
 /*
  add the given aNode as a child of the node at index.
  */
-// @param index: The node at index will become aNode's parent. This index is relative to this ICNode.
+// @param index: The node at index will become aNode's parent. This index is relative to this ICNode. This index must be found under this node.
 // @param aNode: an ICNode object
-// @return an integer indicates the final location of aNode; -1 if not able to add
-- (NSInteger)addAsChildToIndex:(NSInteger)index withNode:(ICNode *)aNode;
+// @return YES if successfully added; NO otherwise
+- (BOOL)addAsChildToIndex:(NSInteger)index withNode:(ICNode *)aNode;
 // @param aParent: The node which will become aNode's parent
 // @param aNode: an ICNode object
-// @return an integer indicates the final location of aNode; -1 if not able to add
-// @throw NSInvalidArgumentException if aParent is not in this node
-- (NSInteger)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode;
+// @return YES if successfully added; NO otherwise
+- (BOOL)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode;
 /*
  Add the given aNode as a sibling of the node at index.
  root can NOT have sibling, so return -1 if the target node is root
  */
 // @param index: The node which will be aNode's immediate higher sibling. This index is relative to this ICNode.
 // @param aNode: an ICNode object
-// @return an integer indicates the final location of aNode; -1 if not able to add
-- (NSInteger)addAsSiblingToIndex:(NSInteger)index withNode:(ICNode *)aNode;
+// @return YES if successfully added; NO otherwise
+- (BOOL)addAsSiblingToIndex:(NSInteger)index withNode:(ICNode *)aNode;
 // @param index: The node which will be aNode's immediate higher sibling
 // @param aNode: an ICNode object
-// @return an integer indicates the final location of aNode; -1 if not able to add
-- (NSInteger)addAsSiblingToNode:(ICNode *)targetNode withNode:(ICNode *)aNode;
+// @return YES if successfully added; NO otherwise
+- (BOOL)addAsSiblingToNode:(ICNode *)targetNode withNode:(ICNode *)aNode;
 /*
  Add the given aNode as the last child to this node
  */
 // @param aNode: an ICNode
-- (void)addAsChild:(ICNode *)aNode;
+// @return YES if successfully added; NO otherwise
+- (BOOL)addAsChild:(ICNode *)aNode;
 /*
  Add the given aNode as a sibling of this node which means to add aNode as the last child to the parnet of this node
  */
-- (void)addAsSibling:(ICNode *)aNode;
+// @return YES if successfully added; NO otherwise
+- (BOOL)addAsSibling:(ICNode *)aNode;
 
 #pragma mark - remove node from tree
 /*
@@ -247,8 +248,13 @@ root
  */
 - (NSString *)printTree;
 /*
+ A convenience method to print data description
+ */
+// @return [[self data] description]
+- (NSString *)printData;
+/*
  Flatten the tree to array view and return it
  */
-// @return an NSArray which represents the array view of this tree
+// @return an NSArray which represents the array view of this tree. The first element in this array is this node
 - (NSArray *)flatThisNode;
 @end

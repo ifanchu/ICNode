@@ -13,10 +13,38 @@
 @interface ICNodeTests : XCTestCase
 
 @end
+typedef enum {
+    ADD_AS_CHILD_TO_INDEX=0,
+    ADD_AS_CHILD_TO_NODE=1,
+    ADD_AS_SIBLING_TO_INDEX=2,
+    ADD_AS_SIBLING_TO_NODE=3,
+    ADD_AS_CHILD=4,
+    ADD_AS_SIBLING=5
+} ADDING_OPERATIONS;
+
+typedef enum {
+    REMOVE_ALL_CHILDREN_FROM_INDEX=0,
+    REMOVE_NODE_AT_INDEX=1,
+    REMOVE_NODE=2,
+    REMOVE=3,
+    REMOVE_FROM_PARENT=4
+} REMOVING_OPERATIONS;
+
+typedef enum {
+    MOVE_NODE_FROM_INDEX_TO_INDEX=0,
+    MOVEUP=1,
+    MOVEDOWN=2
+}MOVING_OPERATIONS;
+
+typedef enum {
+    LEFT_INDENT=0,
+    RIGHT_INDENT=1
+}INDENT_OPERATIONS;
 
 @implementation ICNodeTests
 ICNode *root;   // a root node
 ICNode *tree;   // a sample tree
+
 - (void)setUp
 {
     [super setUp];
@@ -177,61 +205,120 @@ ICNode *tree;   // a sample tree
 
 - (void)testAdding
 {
-    int runs = 10;
+    int runs = 500;
     
     XCTAssertEqual((int)root.flatThisNode.count, 1, @"There is only 1 node in root now");
-    NSMutableArray *candidate = [[NSMutableArray alloc] initWithArray:root.flatThisNode];
+//    NSMutableArray *candidate = [[NSMutableArray alloc] initWithArray:root.flatThisNode];
     
     for (; runs>0; runs--) {
         // choose 1 node from candidate array to be the root of this node
-        ICNode *parent = [candidate objectAtIndex:(arc4random()%candidate.count)];
-        int childrenCount = parent.children.count;
+        // this could be root
+        ICNode *parent = (ICNode *)[root.flatThisNode objectAtIndex:(arc4random()%root.flatThisNode.count)];
+        int indexOfParent = [root indexOf:parent];      // index of the parent relative to root
+        int countOfParent = parent.children.count;      // current immediate children count of parent
+        int countOfRoot = root.countOfAllChildren;      // current all children count of root
+        
         ICNode *thisNode = [[ICNode alloc] initWithData:[ICUnitTestHelper getRandomString:10]];
+        BOOL result;
         
         int which = arc4random()%6;
-        
+        NSString *ops;
         switch (which) {
-            case 0:     // - (NSInteger)addAsChildToIndex:(NSInteger)index withNode:(ICNode *)aNode
+            case ADD_AS_CHILD_TO_INDEX:     // - (NSInteger)addAsChildToIndex:(NSInteger)index withNode:(ICNode *)aNode
+            {
+                result = [root addAsChildToIndex:indexOfParent withNode:thisNode];
+                ops = @"ADD_AS_CHILD_TO_INDEX";
                 break;
-            case 1:     // - (NSInteger)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode
+            }
+            case ADD_AS_CHILD_TO_NODE:     // - (NSInteger)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode
+            {
+                result = [root addAsChildToNode:parent withNode:thisNode];
+                ops = @"ADD_AS_CHILD_TO_NODE";
                 break;
-            case 2:     // - (NSInteger)addAsSiblingToIndex:(NSInteger)index withNode:(ICNode *)aNode
+            }
+            case ADD_AS_SIBLING_TO_INDEX:     // - (NSInteger)addAsSiblingToIndex:(NSInteger)index withNode:(ICNode *)aNode
+            {
+                result = [root addAsSiblingToIndex:indexOfParent withNode:thisNode];
+                ops = @"ADD_AS_SIBLING_TO_INDEX";
                 break;
-            case 3:     // - (NSInteger)addAsSiblingToNode:(ICNode *)targetNode withNode:(ICNode *)aNode
+            }
+            case ADD_AS_SIBLING_TO_NODE:     // - (NSInteger)addAsSiblingToNode:(ICNode *)targetNode withNode:(ICNode *)aNode
+            {
+                result = [root addAsSiblingToNode:parent withNode:thisNode];
+                ops = @"ADD_AS_SIBLING_TO_NODE";
                 break;
-            case 4:     // - (void)addAsChild:(ICNode *)aNode
+            }
+            case ADD_AS_CHILD:     // - (void)addAsChild:(ICNode *)aNode
+            {
+                result = [parent addAsChild:thisNode];
+                ops = @"ADD_AS_CHILD";
                 break;
-            case 5:     // - (void)addAsSibling:(ICNode *)aNode
-
+            }
+            case ADD_AS_SIBLING:     // - (void)addAsSibling:(ICNode *)aNode
+            {
+                result = [parent addAsSibling:thisNode];
+                ops = @"ADD_AS_SIBLING";
                 break;
+            }
             default:
                 break;
         }
-        
-//        XCTAssertEqualObjects([chosenRoot.children objectAtIndex:thisNode.indexOfParent], thisNode, @"thisNode should be the %d's children of root", thisNode.indexOfParent);
-//        XCTAssertFalse(thisNode.isRoot, @"thisNode should not be root");
-//        XCTAssertTrue(thisNode.isLeaf, @"thisNode should be a leaf because it just got created.");
-//        XCTAssertTrue(thisNode.isLastChild, @"thisNode should be the last child of its parent");
-//        XCTAssertEqual((int)chosenRootChildrenCount+1, (int)chosenRoot.children.count, @"After adding a new node to chosenRoot, its children count should increase by 1");
-//        XCTAssertEqual(thisNode.depth, chosenRoot.depth+1, @"thisNode's depth %d should be chosenParent's depth %d + 1", thisNode.depth, chosenRoot.depth);
-//        XCTAssertEqual(chosenRoot.countOfImmediateChildren, chosenRootChildrenCount+1, @"root's count of children");
-        candidate = [[NSMutableArray alloc] initWithArray:root.flatThisNode];
+//        NSLog(@"===============================");
+//        NSLog(@"\nParent: %@\nChild: %@\nOperation: %@\n", parent.printData, thisNode.printData, ops);
+//        NSLog(@"%@", [root printTree]);
+        // if parent == root, add as sibling will return NO and do nothing because root can not have sibling
+        if (parent == root && (which == ADD_AS_SIBLING_TO_NODE || which == ADD_AS_SIBLING_TO_INDEX || which == ADD_AS_SIBLING)) {
+            XCTAssertEqual(result, NO, @"result of operation should be %hhd", NO);
+            XCTAssertTrue([root contains:parent], @"root should still contain parent");
+            XCTAssertTrue(![root contains:thisNode], @"root should not contain %@", thisNode.description);
+            XCTAssertEqual((int)[root countOfAllChildren], countOfRoot, @"Total children count for root remain the same");
+            continue;
+        }
+        // general validations
+        XCTAssertTrue([root contains:thisNode], @"root should now contain %@", thisNode.description);
+        XCTAssertEqual((int)[root countOfAllChildren], countOfRoot + 1, @"total children count for root should increase by 1");
+        XCTAssertNil(thisNode.getLastChild, @"%@ has no last child", thisNode.description);
+        XCTAssertNil(thisNode.getFirstChild, @"%@ has no first child", thisNode.description);
+        XCTAssertNil(thisNode.getYoungerSibling, @"%@ has no younger sibling because it is the last child", thisNode.description);
+        XCTAssertTrue(thisNode.isLastChild, @"%@ should be the last child right after adding", thisNode.description);
+        XCTAssertTrue(thisNode.isLeaf, @"%@ should be a leaf right after adding", thisNode.description);
+        XCTAssertEqualObjects(thisNode.getRootNode, root, @"%@ root node should be root", thisNode.description);
+        XCTAssertTrue(!thisNode.isRoot, @"%@ should not be root", thisNode.description);
+        // validations for add sibling
+        if (which == ADD_AS_SIBLING_TO_NODE || which == ADD_AS_SIBLING_TO_INDEX || which == ADD_AS_SIBLING) {
+            XCTAssertEqual((int)parent.children.count, countOfParent, @"parent's children count should remain the same");
+            XCTAssertEqualObjects(parent.parent.getLastChild, thisNode, @"parent's parent's last child %@ should be %@", parent.parent.getLastChild, thisNode);
+            XCTAssertEqual(thisNode.depth, parent.depth, @"thisNode %@ should have the same depth(%d) as its parent %@(%d)", thisNode.description, thisNode.depth, parent.description, parent.depth);
+            XCTAssertTrue(parent.hasYoungerSibling, @"parent %@ should now have at least one younger sibling", parent.description);
+            XCTAssertTrue(!parent.isLastChild, @"parent %@ should not be the last child", parent.description);
+        }else{          // validations for add child
+            XCTAssertTrue([parent contains:thisNode], @"parent %@ should contain thisNode %@", parent.description, thisNode.description);
+            XCTAssertEqual((int)parent.countOfImmediateChildren, countOfParent+1, @"parent's(%@) immediate children count should increase 1", parent.description);
+            XCTAssertEqualObjects(parent.getLastChild, thisNode, @"parent's(%@) last child is thisNode(%@)", parent.description, thisNode.description);
+            XCTAssertEqual((int)thisNode.depth, parent.depth+1, @"thisNode(%@) depth should be parent's(%@) + 1", thisNode.description, parent.description);
+            XCTAssertTrue(!parent.isLeaf, @"parent(%@) is no longer a leaf even if it was", parent.description);
+            XCTAssertEqualObjects(thisNode.parent, parent, @"thisNode(%@) parent should be %@", thisNode.description, parent.description);
+        }
     }
+    
+    // test contains
+    for (ICNode *node in tree.flatThisNode) {
+        XCTAssertFalse([root contains:node], @"");
+    }
+    
+//    NSLog(@"===============================");
+//    NSLog(@"%@", root.printTree);
+    [self writeStringToDesktop:root.printTree];
 }
 
-//- (void)testPrintTree
-//{
-//    ICNode *root = [[ICNode alloc] initAsRootNode];
-//    ICNode *node1 = [[ICNode alloc] initWithData:@"node1" withParent:root];
-//    ICNode *node2 = [[ICNode alloc] initWithData:@"node2" withParent:node1];
-//    ICNode *node4 = [[ICNode alloc] initWithData:@"node4" withParent:root];
-//    ICNode *node5 = [[ICNode alloc] initWithData:@"node5" withParent:node4];
-//    ICNode *node6 = [[ICNode alloc] initWithData:@"node6" withParent:node5];
-//    ICNode *node7 = [[ICNode alloc] initWithData:@"node7" withParent:node5];
-//    ICNode *node8 = [[ICNode alloc] initWithData:@"node8" withParent:node4];
-//    
-//    NSLog(@"%@", root.printTree);
-//}
+#pragma mark - test removing nodes
+
+- (void)testRemoving
+{
+    
+
+}
+
 
 #pragma mark - unit test helper
 - (NSString *)getRandomString:(int)len
@@ -265,24 +352,57 @@ ICNode *tree;   // a sample tree
  */
 - (void)generateSampleTree
 {
-    ICNode *node1 = [[ICNode alloc] initWithData:@"node1" withParent:tree];
-    ICNode *node2 = [[ICNode alloc] initWithData:@"node2" withParent:node1];
-    ICNode *node3 = [[ICNode alloc] initWithData:@"node3" withParent:node2];
-    ICNode *node4 = [[ICNode alloc] initWithData:@"node4" withParent:node3];
-    ICNode *node5 = [[ICNode alloc] initWithData:@"node5" withParent:node2];
-    ICNode *node6 = [[ICNode alloc] initWithData:@"node6" withParent:node5];
-    ICNode *node7 = [[ICNode alloc] initWithData:@"node7" withParent:node2];
-    ICNode *node8 = [[ICNode alloc] initWithData:@"node8" withParent:node2];
-    ICNode *node9 = [[ICNode alloc] initWithData:@"node9" withParent:node1];
-    ICNode *node10 = [[ICNode alloc] initWithData:@"node10" withParent:tree];
-    ICNode *node11 = [[ICNode alloc] initWithData:@"node11" withParent:node10];
-    ICNode *node12 = [[ICNode alloc] initWithData:@"node12" withParent:node11];
-    ICNode *node13 = [[ICNode alloc] initWithData:@"node14" withParent:node11];
-    ICNode *node14 = [[ICNode alloc] initWithData:@"node13" withParent:node12];
-    ICNode *node15 = [[ICNode alloc] initWithData:@"node15" withParent:tree];
+    ICNode *node1 = [[ICNode alloc] initWithData:@"node1"];
+    [tree addAsChild:node1];
+    ICNode *node2 = [[ICNode alloc] initWithData:@"node2"];
+    [node1 addAsChild:node2];
+    ICNode *node3 = [[ICNode alloc] initWithData:@"node3"];
+    [node2 addAsChild:node3];
+    ICNode *node4 = [[ICNode alloc] initWithData:@"node4"];
+    [node3 addAsChild:node4];
+    ICNode *node5 = [[ICNode alloc] initWithData:@"node5"];
+    [node2 addAsChild:node5];
+    ICNode *node6 = [[ICNode alloc] initWithData:@"node6"];
+    [node5 addAsChild:node6];
+    ICNode *node7 = [[ICNode alloc] initWithData:@"node7"];
+    [node2 addAsChild:node7];
+    ICNode *node8 = [[ICNode alloc] initWithData:@"node8"];
+    [node2 addAsChild:node8];
+    ICNode *node9 = [[ICNode alloc] initWithData:@"node9"];
+    [node1 addAsChild:node9];
+    ICNode *node10 = [[ICNode alloc] initWithData:@"node10"];
+    [tree addAsChild:node10];
+    ICNode *node11 = [[ICNode alloc] initWithData:@"node11"];
+    [node10 addAsChild:node11];
+    ICNode *node12 = [[ICNode alloc] initWithData:@"node12"];
+    [node11 addAsChild:node12];
+    ICNode *node13 = [[ICNode alloc] initWithData:@"node14"];
+    [node11 addAsChild:node13];
+    ICNode *node14 = [[ICNode alloc] initWithData:@"node13"];
+    [node12 addAsChild:node14];
+    ICNode *node15 = [[ICNode alloc] initWithData:@"node15"];
+    [tree addAsChild:node15];
 }
-- (void)testPrintSampleTree
+
+- (void)writeStringToDocumentDirectory:(NSString *)aString
 {
-    NSLog(@"%@", tree.printTree);
+    NSString *filePath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *fileName = @"tree.txt";
+    NSString *fileAtPath = [filePath stringByAppendingPathComponent:fileName];
+    
+    if (![[NSFileManager defaultManager] fileExistsAtPath:fileAtPath]) {
+        [[NSFileManager defaultManager] createFileAtPath:fileAtPath contents:nil attributes:nil];
+    }
+    
+    [[aString dataUsingEncoding:NSUTF8StringEncoding] writeToFile:fileAtPath atomically:NO];
 }
+
+- (void)writeStringToDesktop:(NSString *)aString
+{
+    [aString writeToURL:[NSURL fileURLWithPath:@"/Users/ifanchu/Desktop/tree.txt"] atomically:NO encoding:NSUTF8StringEncoding error:nil];
+}
+//- (void)testPrintSampleTree
+//{
+//    NSLog(@"%@", tree.printTree);
+//}
 @end

@@ -57,7 +57,6 @@
     return self.parent == nil;
 }
 
-// TODO: need test
 - (NSInteger)countOfAllChildren
 {
     return self.flatThisNode.count - 1;     // exclude self
@@ -135,16 +134,16 @@
 
 - (ICNode *)getOlderSibling
 {
-    if (!self.hasYoungerSibling)
+    if (!self.hasOlderSibling)
         return nil;
-    return [self.parent.children objectAtIndex: self.indexOfParent - 1];
+    return [self.parent.children objectAtIndex: (self.indexOfParent - 1)];
 }
 
 - (ICNode *)getYoungerSibling
 {
-    if (!self.hasOlderSibling)
+    if (!self.hasYoungerSibling)
         return nil;
-    return [self.parent.children objectAtIndex: self.indexOfParent + 1];
+    return [self.parent.children objectAtIndex: (self.indexOfParent + 1)];
 }
 
 - (NSInteger)indexOf:(ICNode *)aNode
@@ -169,44 +168,46 @@
 
 #pragma mark - Adding node to tree
 // TODO: need test
-- (NSInteger)addAsChildToIndex:(NSInteger)index withNode:(ICNode *)aNode
+- (BOOL)addAsChildToIndex:(NSInteger)index withNode:(ICNode *)aNode
 {
     ICNode *target = [self nodeAtIndex:index];
-    if (!target)
-        return NSNotFound;
+    if (!target || !aNode)
+        return NO;
     [target addAsChild:aNode];
-    return [self indexOf:aNode];
+    return YES;
 }
 // TODO: need test
-- (NSInteger)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode
+- (BOOL)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode
 {
     // first check if aParent is in this tree
-    if ([self indexOf:aParent] == NSNotFound)
-        @throw [NSException exceptionWithName:NSInvalidArgumentException reason: @"The given aParent node is not in this tree" userInfo:nil];
+    if (![self contains:aParent] || !aNode)
+        return NO;
     [aParent addAsChild:aNode];
-    return [self indexOf:aNode];
+    return YES;
 }
 // TODO: need test
-- (NSInteger)addAsSiblingToIndex:(NSInteger)index withNode:(ICNode *)aNode
+- (BOOL)addAsSiblingToIndex:(NSInteger)index withNode:(ICNode *)aNode
 {
     ICNode *target = [self nodeAtIndex:index];
-    if(!target || target.isRoot)
-        return NSNotFound;      // return NSNotFound if the target is nil or is root
+    if(!target || target.isRoot || !aNode)
+        return NO;
     [target addAsSibling: aNode];
-    return [self indexOf:aNode];
+    return YES;
 }
 // TODO: need test
-- (NSInteger)addAsSiblingToNode:(ICNode *)targetNode withNode:(ICNode *)aNode
+- (BOOL)addAsSiblingToNode:(ICNode *)targetNode withNode:(ICNode *)aNode
 {
-    if(![self contains:targetNode])
-        return NSNotFound;
+    if(![self contains:targetNode] || !aNode || targetNode.isRoot)
+        return NO;
     [targetNode addAsSibling:aNode];
-    return [self indexOf:aNode];
+    return YES;
 }
 
 // TODO: need test
-- (void)addAsChild:(ICNode *)aNode
+- (BOOL)addAsChild:(ICNode *)aNode
 {
+    if (!aNode)
+        return NO;
     // check if aNode has parent, if yes, remove aNode from parent's children
     if (aNode.parent) {
         [aNode removeFromParent];
@@ -214,15 +215,17 @@
     aNode.parent = self;
     [self.children addObject:aNode];
     aNode.indexOfParent = self.children.count - 1;
+    return YES;
 }
 
 // TODO: need test
-- (void)addAsSibling:(ICNode *)aNode
+- (BOOL)addAsSibling:(ICNode *)aNode
 {
-    if (self.isRoot)
-        return;      // can't add sibling to a root
+    if (self.isRoot || !aNode)        // can't add sibling to a root
+        return NO;
     // add aNode to its parent
     [self.parent addAsChild:aNode];
+    return YES;
 }
 
 #pragma mark - remove node from tree
@@ -396,6 +399,11 @@
         [result appendFormat:@"%@\n", line];
     }
     return result;
+}
+
+- (NSString *)printData
+{
+    return data == nil ? nil:[[self data] description];
 }
 
 - (NSArray *)flatThisNode
