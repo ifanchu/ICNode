@@ -10,7 +10,7 @@
 
 @implementation ICNode
 {
-    
+
 }
 @synthesize data, parent, children;
 
@@ -33,8 +33,7 @@
 // deprecate init
 - (id)init
 {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"-init is deprecated" userInfo:nil];
-    return nil;
+    return [self initWithData:nil withParent:nil];
 }
 
 - (id)initAsRootNode
@@ -81,7 +80,12 @@
 
 - (BOOL)isLastChild
 {
-    return self.indexOfParent == self.parent.children.count - 1;
+    return (self.isRoot ? nil:(self.indexOfParent == self.parent.children.count - 1));
+}
+
+- (BOOL)isFirstChild
+{
+    return self.indexOfParent == 0;
 }
 
 // TODO: need test
@@ -97,7 +101,12 @@
 {
     if (self.isRoot)
         return NO;          // root as no sibling
-    return self.indexOfParent != 0;
+    return self.indexOfParent > 0;
+}
+
+- (BOOL) contains:(ICNode *)aNode
+{
+    return [self.flatThisNode containsObject:aNode];
 }
 
 #pragma mark - Finding objects
@@ -108,62 +117,106 @@
     return nil;
 }
 
-// TODO: need implementation
+// TODO: need test
 - (ICNode *)getFirstChild
 {
-    return nil;
+    if (self.children.count == 0)
+        return nil;
+    return [self.children objectAtIndex:0];
 }
 
-// TODO: need implementation
+// TODO: need test
 - (ICNode *)getLastImmediateChild
 {
-    return nil;
+    if (self.children.count == 0)
+        return nil;
+    return [self.children objectAtIndex:(self.children.count - 1)];
 }
 
-// TODO: need implementation
+// TODO: need test
 - (ICNode *)getLastChild
 {
-    return nil;
+    // if the last immediate child is a leaf, return it
+    if (self.getLastImmediateChild.isLeaf)
+        return self.getLastImmediateChild;
+    // otherwise, return the last child of last immediate child
+    return self.getLastImmediateChild.getLastChild;
 }
 
-// TODO: need implementation
+// TODO: need test
 - (ICNode *)getPreviousSibling
 {
-    return nil;
+    if (!self.hasPreviousSibling)
+        return nil;
+    return [self.parent.children objectAtIndex: self.indexOfParent - 1];
 }
 
-// TODO: need implementation
+// TODO: need test
 - (ICNode *)getNextSibling
 {
-    return nil;
+    if (!self.hasNextSibling)
+        return nil;
+    return [self.parent.children objectAtIndex: self.indexOfParent + 1];
 }
 
-// TODO: need implementation
+// TODO: need test
 - (NSInteger)indexOf:(ICNode *)aNode
 {
-    return -1;
+    if (![self contains:aNode])
+        return NSNotFound;
+    // TODO: use indexOfObjectIdenticalTo or indexOfObject?
+    return [self.flatThisNode indexOfObjectIdenticalTo: aNode];
+}
+
+- (ICNode *)nodeAtIndex: (NSInteger)index
+{
+    if (![self checkIndexInBound:index])
+        return nil;
+    return [self.flatThisNode objectAtIndex: index];
+}
+
+- (NSInteger)indexFromRoot
+{
+    return [[self getRootNode] indexOf:self];
 }
 
 #pragma mark - Adding node to tree
-// TODO: need implementation
+// TODO: need test
 - (NSInteger)addAsChildToIndex:(NSInteger)index withNode:(ICNode *)aNode
 {
-    return -1;
+    if (![self checkIndexInBound:index])
+        return NSNotFound;
+    ICNode *target = [self nodeAtIndex:index];
+    if (!target)
+        return NSNotFound;
+    [target addAsChild:aNode];
+    return [self indexOf:aNode];
 }
-// TODO: need implementation
+// TODO: need test
 + (NSInteger)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode
 {
-    return -1;
+    // first check if aParent is in this tree
+    if ([self indexOf:aParent] == NSNotFound)
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason: @"The given aParent node is not in this tree" userInfo:nil];
+    [aParent addAsChild:aNode];
+    return [self indexOf:aNode];
 }
-// TODO: need implementation
+// TODO: need test
 - (NSInteger)addAsSiblingToIndex:(NSInteger)index withNode:(ICNode *)aNode
 {
-    return -1;
+    ICNode *target = [self nodeAtIndex:index];
+    if(!target || target.isRoot)
+        return NSNotFound;      // return NSNotFound if the target is nil or is root
+    [target addAsSibling: aNode];
+    return [self indexOf:aNode];
 }
-// TODO: need implementation
+// TODO: need test
 + (NSInteger)addAsSiblingToNode:(NSInteger)targetNode withNode:(ICNode *)aNode
 {
-    return -1;
+    if(![self contains:targetNode])
+        return NSNotFound;
+    [targetNode addAsSibling:aNode];
+    return self.indexOf(aNode);
 }
 
 // TODO: need test
@@ -171,7 +224,7 @@
 {
     // check if aNode has parent, if yes, remove aNode from parent's children
     if (aNode.parent) {
-        [aNode.parent.children removeObject:aNode];
+        [aNode removeFromParent];
     }
     aNode.parent = self;
     [self.children addObject:aNode];
@@ -188,22 +241,69 @@
 }
 
 #pragma mark - remove node from tree
-// TODO: need implementation
+// TODO: need test
 - (NSInteger)removeAllChildrenFromIndex:(NSInteger)index
 {
-    return -1;
+    ICNode *target = [self nodeAtIndex:index];
+    if(!target)
+        return NSNotFound;
+    int total = target.children.count;
+    for (ICNode *child in children)
+        child.remove;
+    return total;
 }
-// TODO: need implementation
+// TODO: need test
 - (NSInteger)removeNodeAtIndex:(NSInteger)index
 {
-    return -1;
+    ICNode *target = [self nodeAtIndex: index];
+    if (!target)
+        return NSNotFound;
+    int total = target.children.count + 1;  //including self
+    [target remove];
+    return total;
+}
+
+// TODO: need test
+- (BOOL)removeNode:(ICNode *)aNode
+{
+    // check aNode in the tree or if aNode is root
+    if (![self contains:aNode])
+        return NO;
+    // remove aNode from its parent
+    return aNode.remove;
+}
+
+// TODO: need test
+- (BOOL)remove
+{
+    if (self.isRoot)
+        return NO;
+    [self.parent.children removeObject:self];
+    return YES;
+}
+
+- (void)removeFromParent
+{
+    if (self.isRoot)        // can't remove root from its parent
+        return;
+    [self.parent.children removeObject: self];
 }
 
 #pragma mark - moving node
-// TODO: need implementation
+// TODO: need test
 - (BOOL)moveNodeFromIndex:(NSInteger)fromIndex toIndex:(NSInteger)toIndex
 {
-    return NO;
+    ICNode *nodeToMove = [self nodeAtIndex:fromIndex];
+    ICNode *nodeToAppend = [self nodeAtIndex:toIndex];
+    if(!nodeToMove || !nodeToAppend)
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"Either index not found." userInfo:nil];
+    if (nodeToMove.isRoot)      // root can not be moved
+        return NO;
+    // remove nodeToMove from its parent children
+    [nodeToMove.parent.children removeObject: nodeToMove];
+    // add nodeToMove as a child to nodeToAppend
+    [nodeToAppend addAsChild:nodeToMove];
+    return YES;
 }
 // TODO: need implementation
 - (BOOL)moveUp
@@ -217,22 +317,45 @@
 }
 
 #pragma mark - indentation
-// TODO: need implementation
+// TODO: need test
 - (BOOL)leftIndent
 {
-    return NO;
+    if(self.isRoot || self.parent.isRoot)
+        return NO;
+    [self removeFromParent];
+    [self.parent addAsSibling:self];
+    return YES;
 }
 
-// TODO: need implementation
+// TODO: need test
 - (BOOL)rightIndent
 {
-    return NO;
+    int thisIndex = [self indexFromRoot];
+    if (thisIndex == 0)     // can not right indent root
+        return NO;
+    // get previous node
+    ICNode *prev = [[self getRootNode] nodeAtIndex:thisIndex-1];
+    // if previous node has smaller depth, not able to right indent
+    if (prev.depth < self.depth){
+        return NO;
+    }
+    else if (prev.indexOfParent == self.indexOfParent){
+        // if equals, move self to as prev's child
+        [self removeFromParent];
+        [prev addAsChild:self];
+    }else{
+        // if prev depth > self depth, this means there must be a previous sibling, move this node to be its child
+        [self removeFromParent];
+        [[self getPreviousSibling] addAsChild: self];
+    }
+
+    return YES;
 }
 #pragma mark - helper methods
-// TODO: need implementation
+// TODO: need test
 -(BOOL)checkIndexInBound:(NSInteger)index
 {
-    return NO;
+    return index >= 0 && index < self.flatThisNode.count;
 }
 
 - (NSString *)description
@@ -252,11 +375,11 @@
     NSString *connectorSpace = @"|   ";
     NSString *connectorNoMore = @"    ";
     NSArray *flat = [self flatThisNode];        // perform this based on the flattened array
-    
+
     // this array is to determine the prefix of each node, either connectorSpace or connectorNoMore
     // the idea here is that if a node is its parent's last child, change depthStatus[relativeDepth] to connectorNoMore
     NSMutableArray *depthStatus = [[NSMutableArray alloc] init];
-    
+
     for (ICNode *node in flat) {
         if (node == self)
             continue;       // skip the first one, because it is self
@@ -267,7 +390,7 @@
         }
         // declare a string for this line
         NSMutableString *line = [[NSMutableString alloc] initWithString:@""];
-        // if depthStatus[relativeDepth] has been marked as connectorNoMore, change it back to connectorSpace
+        // if depthStatus[relativeDepth] has been marked as connectorNoMore, change it back to connectorSpace because we hit the same depth again and need to reset it
         if ([depthStatus objectAtIndex:relativeDepth] == connectorNoMore) {
             [depthStatus replaceObjectAtIndex:relativeDepth withObject:connectorSpace];
         }

@@ -72,8 +72,14 @@ count
  */
 // @return true if this node is the last child of its parent
 - (BOOL)isLastChild;
+- (BOOL)isFirstChild;
 - (BOOL) hasNextSibling;
 - (BOOL) hasPreviousSibling;
+/*
+ Check whether this node contains the given aNode
+ */
+// @return YES if aNode can be found in the tree; NO otherwise
+- (BOOL) contains:(ICNode *)aNode;
 #pragma mark - Finding objects
 /*
  Return the child at index using DFS pre-order traversal
@@ -107,6 +113,16 @@ count
  Return -1 if not found
  */
 - (NSInteger)indexOf:(ICNode *)aNode;
+/*
+ Return the node at the given index as per array view
+ */
+// @return the node at index in array view relative to this node(the index of this node is 0)
+- (ICNode *)nodeAtIndex: (NSInteger)index;
+/*
+ Return the index of this node relative to its root, if any
+ */
+// @return index relative to root
+- (NSInteger)indexFromRoot;
 
 #pragma mark - Adding node to tree
 /*
@@ -119,6 +135,7 @@ count
 // @param aParent: The node which will become aNode's parent
 // @param aNode: an ICNode object
 // @return an integer indicates the final location of aNode; -1 if not able to add
+// @throw NSInvalidArgumentException if aParent is not in this node
 + (NSInteger)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode;
 /*
  Add the given aNode as a sibling of the node at index.
@@ -132,9 +149,14 @@ count
 // @param aNode: an ICNode object
 // @return an integer indicates the final location of aNode; -1 if not able to add
 + (NSInteger)addAsSiblingToNode:(NSInteger)targetNode withNode:(ICNode *)aNode;
-
+/*
+ Add the given aNode as the last child to this node
+ */
+// @param aNode: an ICNode
 - (void)addAsChild:(ICNode *)aNode;
-
+/*
+ Add the given aNode as a sibling of this node which means to add aNode as the last child to the parnet of this node
+ */
 - (void)addAsSibling:(ICNode *)aNode;
 
 #pragma mark - remove node from tree
@@ -150,22 +172,56 @@ count
 // @param index: the index of the node whose children will be removed including itself. This index is relative to this ICNode.
 // @return an integer which indicates how many nodes have been removed; -1 if not able to remove
 - (NSInteger)removeNodeAtIndex:(NSInteger)index;
+/*
+ Try to remove the given aNode from self children, , this will remove the whole subtree starting from aNode
+ */
+// @param aNode: an ICNode needs to be removed from self children
+- (BOOL)removeNode:(ICNode *)aNode;
+/*
+ Remove this node itself from its parent including all this node's children
+ */
+// @return YES if able to remove; NO otherwise
+- (BOOL)remove;
+/*
+ Remove this node from its parent children array
+ */
+- (void)removeFromParent;
 
 #pragma mark - Moving node
 /*
- Append the given index node as a child to the toIndex node
+ Append the given index node and its subtree as a child to the toIndex node
  */
 // @param fromIndex: The index of ICNode which will be moved
 // @param toIndex: The index of ICNode which will be the parent of fromIndex node
 // @return BOOL: whether the moving operation is able to complete or not
 - (BOOL)moveNodeFromIndex:(NSInteger)fromIndex toIndex:(NSInteger)toIndex;
+/*
+ As per array view, move this node up for 1
+ */
+// @return YES if successfully move the node up; NO otherwise
 - (BOOL)moveUp;
+/*
+ As per array view, move this node down for 1
+ */
+// @return YES if successfully moved the node down; NO otherwise
 - (BOOL)moveDown;
+
 #pragma mark - indentation
+/*
+ As per the list view, perform left indent on this node
+ */
+// @return YES if able to do left indent; NO otherwise
 - (BOOL)leftIndent;
+/*
+ As per the list view, perform right indent on this node
+ */
+// @return YES if able to do right indent; NO otherwise
 - (BOOL)rightIndent;
 
 #pragma mark - helper methods
+/*
+ Check whether the given index exists relative to this node
+ */
 - (BOOL)checkIndexInBound:(NSInteger)index;
 /*
  Traverse the tree in DFS pre-order to see if all nodes have parent
