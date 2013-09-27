@@ -356,6 +356,26 @@ ICNode *tree;   // a sample tree
     [self writeStringToDesktop:root.printTree toFileName:@"afterremove"];
 }
 
+#pragma mark - test move
+- (void)testMove
+{
+    
+}
+
+#pragma mark - test indentation
+- (void)testLeftIndent
+{
+    // target's previous node is root
+    // target's previous node depth is equal to target's
+    // target's previous node depth is larger than target's
+    // target's previous node depth is less than target's
+}
+
+- (void)testRightIndent
+{
+    // target is the very last child or root (in the end of the array view)
+    // right indent can only happen if the previous node's depth is larger than or equal to target's
+}
 
 #pragma mark - unit test helper
 - (NSString *)getRandomString:(int)len

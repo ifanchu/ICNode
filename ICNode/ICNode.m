@@ -268,6 +268,7 @@
     [nodeToAppend addAsChild:nodeToMove];
     return YES;
 }
+#warning What is the logic for moveup and movedown?
 // TODO: need implementation
 - (BOOL)moveUp
 {
