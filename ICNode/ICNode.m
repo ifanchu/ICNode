@@ -167,7 +167,6 @@
 }
 
 #pragma mark - Adding node to tree
-// TODO: need test
 - (BOOL)addAsChildToIndex:(NSInteger)index withNode:(ICNode *)aNode
 {
     ICNode *target = [self nodeAtIndex:index];
@@ -176,7 +175,6 @@
     [target addAsChild:aNode];
     return YES;
 }
-// TODO: need test
 - (BOOL)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode
 {
     // first check if aParent is in this tree
@@ -185,7 +183,6 @@
     [aParent addAsChild:aNode];
     return YES;
 }
-// TODO: need test
 - (BOOL)addAsSiblingToIndex:(NSInteger)index withNode:(ICNode *)aNode
 {
     ICNode *target = [self nodeAtIndex:index];
@@ -194,7 +191,6 @@
     [target addAsSibling: aNode];
     return YES;
 }
-// TODO: need test
 - (BOOL)addAsSiblingToNode:(ICNode *)targetNode withNode:(ICNode *)aNode
 {
     if(![self contains:targetNode] || !aNode || targetNode.isRoot)
@@ -203,14 +199,13 @@
     return YES;
 }
 
-// TODO: need test
 - (BOOL)addAsChild:(ICNode *)aNode
 {
     if (!aNode)
         return NO;
     // check if aNode has parent, if yes, remove aNode from parent's children
     if (aNode.parent) {
-        [aNode removeFromParent];
+        [aNode detach];
     }
     aNode.parent = self;
     [self.children addObject:aNode];
@@ -218,7 +213,6 @@
     return YES;
 }
 
-// TODO: need test
 - (BOOL)addAsSibling:(ICNode *)aNode
 {
     if (self.isRoot || !aNode)        // can't add sibling to a root
@@ -230,51 +224,32 @@
 
 #pragma mark - remove node from tree
 // TODO: need test
-- (NSInteger)removeAllChildrenFromIndex:(NSInteger)index
+- (BOOL)removeAllChildrenFromIndex:(NSInteger)index
 {
     ICNode *target = [self nodeAtIndex:index];
     if(!target)
-        return NSNotFound;
-    int total = target.children.count;
-    for (ICNode *child in children)
-        child.remove;
-    return total;
-}
-// TODO: need test
-- (NSInteger)removeNodeAtIndex:(NSInteger)index
-{
-    ICNode *target = [self nodeAtIndex: index];
-    if (!target)
-        return NSNotFound;
-    int total = target.children.count + 1;  //including self
-    [target remove];
-    return total;
-}
-
-// TODO: need test
-- (BOOL)removeNode:(ICNode *)aNode
-{
-    // check aNode in the tree or if aNode is root
-    if (![self contains:aNode])
         return NO;
-    // remove aNode from its parent
-    return aNode.remove;
-}
-
-// TODO: need test
-- (BOOL)remove
-{
-    if (self.isRoot)
-        return NO;
-    [self.parent.children removeObject:self];
+    for (ICNode *child in [target.children copy])
+        child.detach;
     return YES;
 }
-
-- (void)removeFromParent
+// TODO: need test
+- (BOOL)removeNodeAtIndex:(NSInteger)index
 {
-    if (self.isRoot)        // can't remove root from its parent
-        return;
+    ICNode *target = [self nodeAtIndex: index];
+    if (!target || target.isRoot)       // can not remove root itself
+        return NO;
+    return [target detach];
+}
+
+// TODO: need test
+- (BOOL)detach
+{
+    if (self.isRoot)        // can not remove root
+        return NO;
     [self.parent.children removeObject: self];
+    self.parent = nil;
+    return YES;
 }
 
 #pragma mark - moving node
@@ -310,7 +285,7 @@
 {
     if(self.isRoot || self.parent.isRoot)
         return NO;
-    [self removeFromParent];
+    [self detach];
     [self.parent addAsSibling:self];
     return YES;
 }
@@ -329,11 +304,11 @@
     }
     else if (prev.indexOfParent == self.indexOfParent){
         // if equals, move self to as prev's child
-        [self removeFromParent];
+        [self detach];
         [prev addAsChild:self];
     }else{
         // if prev depth > self depth, this means there must be a previous sibling, move this node to be its child
-        [self removeFromParent];
+        [self detach];
         [[self getOlderSibling] addAsChild: self];
     }
 

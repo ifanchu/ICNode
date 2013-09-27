@@ -161,29 +161,21 @@ count
 /*
  Remove all children form the node at the given index
  */
-// @param index: the index of the node whose children will be removed from it. This index is relative to this ICNode.
-// @return an integer which indicates how many nodes have been removed from index node; -1 if not able to remove
-- (NSInteger)removeAllChildrenFromIndex:(NSInteger)index;
+// @param index: the index of the node whose children will be removed from it. This index is relative to this ICNode. index can be 0, which means we can remove all the children of root
+// @return YES if successfully removed; NO otherwise
+- (BOOL)removeAllChildrenFromIndex:(NSInteger)index;
 /*
  Remove all children including itself
  */
 // @param index: the index of the node whose children will be removed including itself. This index is relative to this ICNode.
-// @return an integer which indicates how many nodes have been removed; -1 if not able to remove
-- (NSInteger)removeNodeAtIndex:(NSInteger)index;
+// @return YES if successfully removed; NO if index is 0(root)
+- (BOOL)removeNodeAtIndex:(NSInteger)index;
+
 /*
- Try to remove the given aNode from self children, , this will remove the whole subtree starting from aNode
+ Detach this node itself from its parent along with all this node's children
  */
-// @param aNode: an ICNode needs to be removed from self children
-- (BOOL)removeNode:(ICNode *)aNode;
-/*
- Remove this node itself from its parent including all this node's children
- */
-// @return YES if able to remove; NO otherwise
-- (BOOL)remove;
-/*
- Remove this node from its parent children array
- */
-- (void)removeFromParent;
+// @return YES if able to remove; NO if self is root
+- (BOOL)detach;
 
 #pragma mark - Moving node
 /*

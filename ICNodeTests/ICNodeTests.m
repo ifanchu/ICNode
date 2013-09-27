@@ -11,7 +11,7 @@
 #import "ICUnitTestHelper.h"
 
 @interface ICNodeTests : XCTestCase
-
+#pragma mark - typedefs
 @end
 typedef enum {
     ADD_AS_CHILD_TO_INDEX=0,
@@ -25,9 +25,7 @@ typedef enum {
 typedef enum {
     REMOVE_ALL_CHILDREN_FROM_INDEX=0,
     REMOVE_NODE_AT_INDEX=1,
-    REMOVE_NODE=2,
-    REMOVE=3,
-    REMOVE_FROM_PARENT=4
+    DETACH=2,
 } REMOVING_OPERATIONS;
 
 typedef enum {
@@ -201,16 +199,16 @@ ICNode *tree;   // a sample tree
 }
 
 
-#pragma mark - test adding
+#pragma mark - test adding and removing
 
 - (void)testAdding
 {
-    int runs = 500;
-    
+    int addruns = 500;
+    int removeruns = 150;
     XCTAssertEqual((int)root.flatThisNode.count, 1, @"There is only 1 node in root now");
 //    NSMutableArray *candidate = [[NSMutableArray alloc] initWithArray:root.flatThisNode];
     
-    for (; runs>0; runs--) {
+    for (; addruns>0; addruns--) {
         // choose 1 node from candidate array to be the root of this node
         // this could be root
         ICNode *parent = (ICNode *)[root.flatThisNode objectAtIndex:(arc4random()%root.flatThisNode.count)];
@@ -308,15 +306,54 @@ ICNode *tree;   // a sample tree
     
 //    NSLog(@"===============================");
 //    NSLog(@"%@", root.printTree);
-    [self writeStringToDesktop:root.printTree];
-}
-
-#pragma mark - test removing nodes
-
-- (void)testRemoving
-{
+    [self writeStringToDesktop:root.printTree toFileName:@"afteradd"];
     
-
+    // END ADDING
+    // START REMOVING
+#pragma mark - test removing
+    
+    NSLog(@"Start removing...");
+    for (; removeruns>0; removeruns--) {
+        // pick a random node, this could be root
+        int baseIndex = arc4random()%root.flatThisNode.count;
+        ICNode *baseNode = [root.flatThisNode objectAtIndex:baseIndex];
+        int totalChildrenCountForBase = baseNode.countOfAllChildren;
+        int totalChildrenCountForRoot = root.countOfAllChildren;
+        
+        int index = arc4random()%baseNode.flatThisNode.count;
+        ICNode *targetNode = [baseNode nodeAtIndex:index];
+        int count = targetNode.countOfAllChildren;
+        
+        int which = arc4random()%3;
+        BOOL result;
+        
+        NSLog(@"Removing %@ with operation %d", [targetNode description], which);
+        switch (which) {
+            case REMOVE_ALL_CHILDREN_FROM_INDEX:
+            {
+                result = [baseNode removeAllChildrenFromIndex:index];
+                XCTAssertEqual(root.countOfAllChildren, totalChildrenCountForRoot - count, @"%@", [targetNode description]);
+                break;
+            }
+            case REMOVE_NODE_AT_INDEX:
+            {
+                result = [baseNode removeNodeAtIndex:index];
+                XCTAssertEqual(root.countOfAllChildren, totalChildrenCountForRoot - count - 1, @"%@", [targetNode description]);
+                break;
+            }
+            case DETACH:
+            {
+                result = [targetNode detach];
+                XCTAssertEqual(root.countOfAllChildren, totalChildrenCountForRoot - count - 1, @"%@", [targetNode description]);
+                break;
+            }
+            default:
+                break;
+        }
+        
+        targetNode = nil;
+    }
+    [self writeStringToDesktop:root.printTree toFileName:@"afterremove"];
 }
 
 
@@ -397,9 +434,10 @@ ICNode *tree;   // a sample tree
     [[aString dataUsingEncoding:NSUTF8StringEncoding] writeToFile:fileAtPath atomically:NO];
 }
 
-- (void)writeStringToDesktop:(NSString *)aString
+- (void)writeStringToDesktop:(NSString *)aString toFileName:(NSString *)filename
 {
-    [aString writeToURL:[NSURL fileURLWithPath:@"/Users/ifanchu/Desktop/tree.txt"] atomically:NO encoding:NSUTF8StringEncoding error:nil];
+    NSString *fullpath = [NSString stringWithFormat:@"/Users/ifanchu/Desktop/%@.txt", filename];
+    [aString writeToURL:[NSURL fileURLWithPath:fullpath] atomically:NO encoding:NSUTF8StringEncoding error:nil];
 }
 //- (void)testPrintSampleTree
 //{
