@@ -203,8 +203,8 @@ ICNode *tree;   // a sample tree
 
 - (void)testAdding
 {
-    int addruns = 500;
-    int removeruns = 150;
+    int addruns = 50;
+    int removeruns = 20;
     XCTAssertEqual((int)root.flatThisNode.count, 1, @"There is only 1 node in root now");
 //    NSMutableArray *candidate = [[NSMutableArray alloc] initWithArray:root.flatThisNode];
     
@@ -317,34 +317,61 @@ ICNode *tree;   // a sample tree
         // pick a random node, this could be root
         int baseIndex = arc4random()%root.flatThisNode.count;
         ICNode *baseNode = [root.flatThisNode objectAtIndex:baseIndex];
-        int totalChildrenCountForBase = baseNode.countOfAllChildren;
         int totalChildrenCountForRoot = root.countOfAllChildren;
         
         int index = arc4random()%baseNode.flatThisNode.count;
         ICNode *targetNode = [baseNode nodeAtIndex:index];
         int count = targetNode.countOfAllChildren;
+        ICNode *parent = targetNode.parent;
+        int countOfParent = parent.countOfImmediateChildren;
         
         int which = arc4random()%3;
         BOOL result;
         
         NSLog(@"Removing %@ with operation %d", [targetNode description], which);
+        // after removing targetNode with operation REMOVE_NODE_AT_INDEX and DETACH, targetNode's younger siblings's indexOfParent will decrease by 1
+        NSArray *youngerSiblingsOfTarget = [targetNode.parent.children objectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(targetNode.indexOfParent+1, countOfParent-targetNode.indexOfParent-1)]];
+        NSMutableArray *youngerSiblingsOfTargetIndexOfParent = [[NSMutableArray alloc] init];
+        for (ICNode *node in youngerSiblingsOfTarget) {
+            [youngerSiblingsOfTargetIndexOfParent addObject:[ NSNumber numberWithInteger:node.indexOfParent]];
+        }
         switch (which) {
             case REMOVE_ALL_CHILDREN_FROM_INDEX:
             {
                 result = [baseNode removeAllChildrenFromIndex:index];
                 XCTAssertEqual(root.countOfAllChildren, totalChildrenCountForRoot - count, @"%@", [targetNode description]);
+                XCTAssertTrue([root contains:baseNode], @"");
+                XCTAssertTrue([baseNode contains:targetNode], @"");
+                XCTAssertEqual((int)targetNode.children.count, 0, @"");
+                XCTAssertTrue(targetNode.isLeaf, @"");
                 break;
             }
             case REMOVE_NODE_AT_INDEX:
             {
                 result = [baseNode removeNodeAtIndex:index];
                 XCTAssertEqual(root.countOfAllChildren, totalChildrenCountForRoot - count - 1, @"%@", [targetNode description]);
+                XCTAssertFalse([root contains:targetNode], @"");
+                XCTAssertFalse([parent contains:targetNode], @"");
+                XCTAssertEqual(countOfParent, parent.countOfImmediateChildren + 1, @"");
+                for (int i = 0; i < youngerSiblingsOfTarget.count; i++) {
+                    XCTAssertEqual([(ICNode *)[youngerSiblingsOfTarget objectAtIndex:i] indexOfParent],
+                                   (int)[youngerSiblingsOfTargetIndexOfParent objectAtIndex:i] - 1,
+                                   @"After removing targetNode %@, its younger sibling's indexOfParent should decrease by 1", [targetNode description]);
+                }
                 break;
             }
             case DETACH:
             {
                 result = [targetNode detach];
                 XCTAssertEqual(root.countOfAllChildren, totalChildrenCountForRoot - count - 1, @"%@", [targetNode description]);
+                XCTAssertFalse([root contains:targetNode], @"");
+                XCTAssertFalse([parent contains:targetNode], @"");
+                XCTAssertEqual(countOfParent, parent.countOfImmediateChildren + 1, @"");
+                for (int i = 0; i < youngerSiblingsOfTarget.count; i++) {
+                    XCTAssertEqual([(ICNode *)[youngerSiblingsOfTarget objectAtIndex:i] indexOfParent],
+                                   (int)[youngerSiblingsOfTargetIndexOfParent objectAtIndex:i] - 1,
+                                   @"After removing targetNode %@, its younger sibling's indexOfParent should decrease by 1", [targetNode description]);
+                }
                 break;
             }
             default:

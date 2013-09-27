@@ -243,6 +243,7 @@
 }
 
 // TODO: need test
+#warning after detaching this node, need to decrease each of its younger siblings indexOfParent by 1
 - (BOOL)detach
 {
     if (self.isRoot)        // can not remove root

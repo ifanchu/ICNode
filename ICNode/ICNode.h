@@ -172,7 +172,7 @@ count
 - (BOOL)removeNodeAtIndex:(NSInteger)index;
 
 /*
- Detach this node itself from its parent along with all this node's children
+ Detach this node itself from its parent along with all this node's children. Then need to decreasem each of its younger siblings indexOfParent by 1
  */
 // @return YES if able to remove; NO if self is root
 - (BOOL)detach;
