@@ -354,9 +354,9 @@ ICNode *tree;   // a sample tree
                 XCTAssertFalse([parent contains:targetNode], @"");
                 XCTAssertEqual(countOfParent, parent.countOfImmediateChildren + 1, @"");
                 for (int i = 0; i < youngerSiblingsOfTarget.count; i++) {
-                    XCTAssertEqual([(ICNode *)[youngerSiblingsOfTarget objectAtIndex:i] indexOfParent],
-                                   (int)[youngerSiblingsOfTargetIndexOfParent objectAtIndex:i] - 1,
-                                   @"After removing targetNode %@, its younger sibling's indexOfParent should decrease by 1", [targetNode description]);
+                    int new = (int)[(ICNode *)[youngerSiblingsOfTarget objectAtIndex:i] indexOfParent];
+                    int old = [((NSNumber *)[youngerSiblingsOfTargetIndexOfParent objectAtIndex:i]) intValue] - 1;
+                    XCTAssertEqual(new, old, @"After removing targetNode %@, its younger sibling's indexOfParent should decrease by 1", [targetNode description]);
                 }
                 break;
             }
@@ -368,19 +368,24 @@ ICNode *tree;   // a sample tree
                 XCTAssertFalse([parent contains:targetNode], @"");
                 XCTAssertEqual(countOfParent, parent.countOfImmediateChildren + 1, @"");
                 for (int i = 0; i < youngerSiblingsOfTarget.count; i++) {
-                    XCTAssertEqual([(ICNode *)[youngerSiblingsOfTarget objectAtIndex:i] indexOfParent],
-                                   (int)[youngerSiblingsOfTargetIndexOfParent objectAtIndex:i] - 1,
-                                   @"After removing targetNode %@, its younger sibling's indexOfParent should decrease by 1", [targetNode description]);
+                    int new = (int)[(ICNode *)[youngerSiblingsOfTarget objectAtIndex:i] indexOfParent];
+                    int old = [((NSNumber *)[youngerSiblingsOfTargetIndexOfParent objectAtIndex:i]) intValue] - 1;
+                    XCTAssertEqual(new, old,@"After removing targetNode %@, its younger sibling's indexOfParent should decrease by 1", [targetNode description]);
                 }
                 break;
             }
             default:
                 break;
         }
-        
+        [self writeStringToDesktop:root.printTree toFileName:@"afterremove"];
         targetNode = nil;
     }
-    [self writeStringToDesktop:root.printTree toFileName:@"afterremove"];
+    
+    XCTAssertFalse(root.detach, @"Can not detach root");
+    XCTAssertTrue([root removeAllChildrenFromIndex:0], @"remove all children from root");
+    XCTAssertTrue(root.countOfAllChildren == 0, @"");
+    XCTAssertTrue(root.children.count == 0, @"");
+    XCTAssertTrue(root.flatThisNode.count == 1, @"Only root itself");
 }
 
 #pragma mark - test move

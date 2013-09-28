@@ -12,7 +12,7 @@
 {
 
 }
-@synthesize data, parent, children;
+@synthesize data, parent, children, indexOfParent;
 
 #pragma mark - Initializers
 - (id)initWithData:(id)aData withParent:(ICNode *)aParent
@@ -166,6 +166,26 @@
     return [[self getRootNode] indexOf:self];
 }
 
+// TODO: need test
+- (ICNode *)getPreviousNode
+{
+    if (self.isRoot)
+        return NO;
+    return [[self getRootNode] nodeAtIndex:self.indexFromRoot-1];
+}
+// TODO: need test
+- (ICNode *)getNextNode
+{
+    int index = self.indexFromRoot;
+    // very last child has no next node
+    if (index == (int)self.getRootNode.countOfAllChildren)
+        return NO;
+    ICNode *target = [self.getRootNode nodeAtIndex:(index + 1)];
+    if (target == nil)
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"ICNode.m getNextNode: target should have next node" userInfo:nil];
+    return target;
+}
+
 #pragma mark - Adding node to tree
 - (BOOL)addAsChildToIndex:(NSInteger)index withNode:(ICNode *)aNode
 {
@@ -243,12 +263,17 @@
 }
 
 // TODO: need test
-#warning after detaching this node, need to decrease each of its younger siblings indexOfParent by 1
 - (BOOL)detach
 {
     if (self.isRoot)        // can not remove root
         return NO;
+    // get an array of this node's younger siblings
+    NSArray *youngerSiblingsOfTarget = [parent.children objectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(indexOfParent+1, parent.countOfImmediateChildren - indexOfParent - 1)]];
     [self.parent.children removeObject: self];
+    // decrease indexOfParent for each of younger sibling
+    for (ICNode *node in youngerSiblingsOfTarget) {
+        node.indexOfParent--;
+    }
     self.parent = nil;
     return YES;
 }
@@ -264,7 +289,7 @@
     if (nodeToMove.isRoot)      // root can not be moved
         return NO;
     // remove nodeToMove from its parent children
-    [nodeToMove.parent.children removeObject: nodeToMove];
+    [nodeToMove detach];
     // add nodeToMove as a child to nodeToAppend
     [nodeToAppend addAsChild:nodeToMove];
     return YES;
@@ -299,7 +324,7 @@
     if (thisIndex == 0)     // can not right indent root
         return NO;
     // get previous node
-    ICNode *prev = [[self getRootNode] nodeAtIndex:thisIndex-1];
+    ICNode *prev = self.getPreviousNode;
     // if previous node has smaller depth, not able to right indent
     if (prev.depth < self.depth){
         return NO;
@@ -392,12 +417,24 @@
     return result;
 }
 
+// TODO: need test
+- (BOOL)validate
+{
+    if (self.children.count == 0)
+        return YES;
+    BOOL result;
+    for (ICNode *node in self.children){
+        result = result && [node validate];
+    }
+    return result;
+}
+
 #pragma mark - custom setters
 - (void)setIndexOfParent:(int)index
 {
     if (index < 0) {
         @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"indexOfParent can not be less than 0 as it represents an array index" userInfo:nil];
     }
-    _indexOfParent = index;
+    indexOfParent = index;
 }
 @end

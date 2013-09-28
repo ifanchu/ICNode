@@ -120,6 +120,16 @@ count
  */
 // @return index relative to root
 - (NSInteger)indexFromRoot;
+/*
+ Get the ICNode right before this node as in array view
+ */
+// @return the ICNode right before this node as in array view; nil if this node is root
+- (ICNode *)getPreviousNode;
+/*
+ Get the ICNode right after this node as in array view
+ */
+// @return the ICNode right after this node as in array view; nil if this node is the very last node
+- (ICNode *)getNextNode;
 
 #pragma mark - Adding node to tree
 /*
@@ -186,12 +196,12 @@ count
 // @return BOOL: whether the moving operation is able to complete or not
 - (BOOL)moveNodeFromIndex:(NSInteger)fromIndex toIndex:(NSInteger)toIndex;
 /*
- As per array view, move this node up for 1
+ As per array view, move this node and all its children up for 1
  */
 // @return YES if successfully move the node up; NO otherwise
 - (BOOL)moveUp;
 /*
- As per array view, move this node down for 1
+ As per array view, move this node and all its children down for 1
  */
 // @return YES if successfully moved the node down; NO otherwise
 - (BOOL)moveDown;
@@ -249,4 +259,8 @@ root
  */
 // @return an NSArray which represents the array view of this tree. The first element in this array is this node
 - (NSArray *)flatThisNode;
+/*
+ This method is to validate the parent-chidren structure of this node. This basically validates that in each node, the children has correct indexOfParent
+ */
+- (BOOL)validate;
 @end
