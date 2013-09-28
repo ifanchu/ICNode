@@ -50,6 +50,7 @@ ICNode *tree;   // a sample tree
     root = [[ICNode alloc] initAsRootNode];
     tree = [[ICNode alloc] initAsRootNode];
     [self generateSampleTree];
+    [self generateRandomRoot:50];
 }
 
 - (void)tearDown
@@ -81,7 +82,6 @@ ICNode *tree;   // a sample tree
 {
     int runs = 15;
     
-    XCTAssertEqual((int)root.flatThisNode.count, 1, @"There is only 1 node in root now");
     NSMutableArray *candidate = [[NSMutableArray alloc] initWithArray:root.flatThisNode];
     
     for (; runs>0; runs--) {
@@ -308,7 +308,6 @@ ICNode *tree;   // a sample tree
     
     // END ADDING
     // START REMOVING
-#pragma mark - test removing
     
     NSLog(@"Start removing...");
     for (; removeruns>0; removeruns--) {
@@ -469,6 +468,64 @@ ICNode *tree;   // a sample tree
     [node12 addAsChild:node14];
     ICNode *node15 = [[ICNode alloc] initWithData:@"node15"];
     [tree addAsChild:node15];
+}
+
+- (void)generateRandomRoot:(int)howManyNodes
+{
+    int addruns = howManyNodes;
+    
+    for (; addruns>0; addruns--) {
+        // choose 1 node from candidate array to be the root of this node
+        // this could be root
+        ICNode *parent = (ICNode *)[root.flatThisNode objectAtIndex:(arc4random()%root.flatThisNode.count)];
+        int indexOfParent = [root indexOf:parent];      // index of the parent relative to root
+        
+        ICNode *thisNode = [[ICNode alloc] initWithData:[ICUnitTestHelper getRandomString:10]];
+        BOOL result;
+        
+        int which = arc4random()%6;
+        NSString *ops;
+        switch (which) {
+            case ADD_AS_CHILD_TO_INDEX:     // - (NSInteger)addAsChildToIndex:(NSInteger)index withNode:(ICNode *)aNode
+            {
+                result = [root addAsChildToIndex:indexOfParent withNode:thisNode];
+                ops = @"ADD_AS_CHILD_TO_INDEX";
+                break;
+            }
+            case ADD_AS_CHILD_TO_NODE:     // - (NSInteger)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode
+            {
+                result = [root addAsChildToNode:parent withNode:thisNode];
+                ops = @"ADD_AS_CHILD_TO_NODE";
+                break;
+            }
+            case ADD_AS_SIBLING_TO_INDEX:     // - (NSInteger)addAsSiblingToIndex:(NSInteger)index withNode:(ICNode *)aNode
+            {
+                result = [root addAsSiblingToIndex:indexOfParent withNode:thisNode];
+                ops = @"ADD_AS_SIBLING_TO_INDEX";
+                break;
+            }
+            case ADD_AS_SIBLING_TO_NODE:     // - (NSInteger)addAsSiblingToNode:(ICNode *)targetNode withNode:(ICNode *)aNode
+            {
+                result = [root addAsSiblingToNode:parent withNode:thisNode];
+                ops = @"ADD_AS_SIBLING_TO_NODE";
+                break;
+            }
+            case ADD_AS_CHILD:     // - (void)addAsChild:(ICNode *)aNode
+            {
+                result = [parent addAsChild:thisNode];
+                ops = @"ADD_AS_CHILD";
+                break;
+            }
+            case ADD_AS_SIBLING:     // - (void)addAsSibling:(ICNode *)aNode
+            {
+                result = [parent addAsSibling:thisNode];
+                ops = @"ADD_AS_SIBLING";
+                break;
+            }
+            default:
+                break;
+        }
+    }
 }
 
 - (void)writeStringToDocumentDirectory:(NSString *)aString
