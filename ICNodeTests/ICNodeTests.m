@@ -205,8 +205,6 @@ ICNode *tree;   // a sample tree
 {
     int addruns = 50;
     int removeruns = 20;
-    XCTAssertEqual((int)root.flatThisNode.count, 1, @"There is only 1 node in root now");
-//    NSMutableArray *candidate = [[NSMutableArray alloc] initWithArray:root.flatThisNode];
     
     for (; addruns>0; addruns--) {
         // choose 1 node from candidate array to be the root of this node

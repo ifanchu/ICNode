@@ -243,7 +243,6 @@
 }
 
 #pragma mark - remove node from tree
-// TODO: need test
 - (BOOL)removeAllChildrenFromIndex:(NSInteger)index
 {
     ICNode *target = [self nodeAtIndex:index];
@@ -253,7 +252,6 @@
         child.detach;
     return YES;
 }
-// TODO: need test
 - (BOOL)removeNodeAtIndex:(NSInteger)index
 {
     ICNode *target = [self nodeAtIndex: index];
@@ -262,7 +260,6 @@
     return [target detach];
 }
 
-// TODO: need test
 - (BOOL)detach
 {
     if (self.isRoot)        // can not remove root
