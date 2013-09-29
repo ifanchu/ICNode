@@ -51,7 +51,7 @@ int runs;
     root = [[ICNode alloc] initAsRootNode];
     tree = [[ICNode alloc] initAsRootNode];
     [self generateSampleTree];
-    runs = 500;
+    runs = 1000;
 }
 
 - (void)tearDown
@@ -482,6 +482,11 @@ int runs;
     }
 }
 
+- (void)testMoveUpAndDown
+{
+    
+}
+
 #pragma mark - test indentation
 - (void)testIndentation
 {
@@ -555,12 +560,6 @@ int runs;
                 break;
         }
     }
-}
-
-- (void)testRightIndent
-{
-    // target is the very last child or root (in the end of the array view)
-    // right indent can only happen if the previous node's depth is larger than or equal to target's
 }
 
 #pragma mark - test helper

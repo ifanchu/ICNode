@@ -304,7 +304,6 @@
 }
 
 #pragma mark - indentation
-// TODO: need test
 - (BOOL)leftIndent
 {
     if(self.isRoot || self.parent.isRoot)
@@ -315,7 +314,6 @@
     return YES;
 }
 
-// TODO: need test
 - (BOOL)rightIndent
 {
     if (self.isRoot)     // can not right indent root
