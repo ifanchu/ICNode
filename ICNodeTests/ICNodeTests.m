@@ -475,6 +475,14 @@ int runs;
     // right indent can only happen if the previous node's depth is larger than or equal to target's
 }
 
+#pragma mark - test helper
+- (void)testValidate
+{
+    [self generateRandomRoot:300];
+    [self writeStringToDesktop:root.printTree toFileName:@"testValidate"];
+    XCTAssertTrue([root validate], @"");
+}
+
 #pragma mark - unit test helper
 - (NSString *)getRandomString:(int)len
 {

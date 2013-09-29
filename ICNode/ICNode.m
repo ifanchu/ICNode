@@ -276,7 +276,6 @@
 }
 
 #pragma mark - moving node
-// TODO: need test
 - (BOOL)moveNodeFromIndex:(NSInteger)fromIndex toIndex:(NSInteger)toIndex
 {
     if (![self checkIndexInBound:fromIndex] || ![self checkIndexInBound:toIndex])
@@ -418,14 +417,14 @@
     return result;
 }
 
-// TODO: need test
 - (BOOL)validate
 {
     if (self.children.count == 0)
         return YES;
-    BOOL result;
-    for (ICNode *node in self.children){
-        result = result && [node validate];
+    BOOL result = YES;
+    for (int i = 0; i < self.children.count; i++) {
+        ICNode *node = [self.children objectAtIndex:i];
+        result = result && (node.indexOfParent == i) && node.validate;
     }
     return result;
 }
