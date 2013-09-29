@@ -166,6 +166,11 @@ count
  */
 // @return YES if successfully added; NO otherwise
 - (BOOL)addAsSibling:(ICNode *)aNode;
+/*
+ Add this node as self's immediate older sibling
+ */
+// @return true if successfully added; NO otherwise
+- (BOOL)addAsOlderSibling:(ICNode *)aNode;
 
 #pragma mark - remove node from tree
 /*
@@ -198,7 +203,7 @@ count
 // @throw NSInvalidArgumentException if toIndex is a child of fromIndex
 - (BOOL)moveNodeFromIndex:(NSInteger)fromIndex toIndex:(NSInteger)toIndex;
 /*
- As per array view, move this node and all its children up for 1
+ As per array view, move this node and all its children up for 1. Basically this method is to replace this node's previous node with this node but preservce the previous node's depth
  */
 // @return YES if successfully move the node up; NO otherwise
 - (BOOL)moveUp;

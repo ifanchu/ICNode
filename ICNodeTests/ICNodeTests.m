@@ -19,7 +19,8 @@ typedef enum {
     ADD_AS_SIBLING_TO_INDEX=2,
     ADD_AS_SIBLING_TO_NODE=3,
     ADD_AS_CHILD=4,
-    ADD_AS_SIBLING=5
+    ADD_AS_SIBLING=5,
+    ADD_AS_OLDER_SIBLING=6
 } ADDING_OPERATIONS;
 
 typedef enum {
@@ -51,7 +52,7 @@ int runs;
     root = [[ICNode alloc] initAsRootNode];
     tree = [[ICNode alloc] initAsRootNode];
     [self generateSampleTree];
-    runs = 1000;
+    runs = 200;
 }
 
 - (void)tearDown
@@ -225,11 +226,13 @@ int runs;
 
 - (void)testAdding
 {
+    [self generateRandomRoot:50];
     
     for (; runs>0; runs--) {
         // choose 1 node from candidate array to be the root of this node
         // this could be root
         ICNode *parent = (ICNode *)[root.flatThisNode objectAtIndex:(arc4random()%root.flatThisNode.count)];
+        int index = parent.indexOfParent;
         int indexOfParent = [root indexOf:parent];      // index of the parent relative to root
         int countOfParent = parent.children.count;      // current immediate children count of parent
         int countOfRoot = root.countOfAllChildren;      // current all children count of root
@@ -237,43 +240,43 @@ int runs;
         ICNode *thisNode = [[ICNode alloc] initWithData:[ICUnitTestHelper getRandomString:10]];
         BOOL result;
         
-        int which = arc4random()%6;
-        NSString *ops;
+        [self writeStringToDesktop:root.printTree toFileName:@"beforeAdding"];
+        
+        int which = arc4random()%7;
         switch (which) {
             case ADD_AS_CHILD_TO_INDEX:     // - (NSInteger)addAsChildToIndex:(NSInteger)index withNode:(ICNode *)aNode
             {
                 result = [root addAsChildToIndex:indexOfParent withNode:thisNode];
-                ops = @"ADD_AS_CHILD_TO_INDEX";
                 break;
             }
             case ADD_AS_CHILD_TO_NODE:     // - (NSInteger)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode
             {
                 result = [root addAsChildToNode:parent withNode:thisNode];
-                ops = @"ADD_AS_CHILD_TO_NODE";
                 break;
             }
             case ADD_AS_SIBLING_TO_INDEX:     // - (NSInteger)addAsSiblingToIndex:(NSInteger)index withNode:(ICNode *)aNode
             {
                 result = [root addAsSiblingToIndex:indexOfParent withNode:thisNode];
-                ops = @"ADD_AS_SIBLING_TO_INDEX";
                 break;
             }
             case ADD_AS_SIBLING_TO_NODE:     // - (NSInteger)addAsSiblingToNode:(ICNode *)targetNode withNode:(ICNode *)aNode
             {
                 result = [root addAsSiblingToNode:parent withNode:thisNode];
-                ops = @"ADD_AS_SIBLING_TO_NODE";
                 break;
             }
             case ADD_AS_CHILD:     // - (void)addAsChild:(ICNode *)aNode
             {
                 result = [parent addAsChild:thisNode];
-                ops = @"ADD_AS_CHILD";
                 break;
             }
             case ADD_AS_SIBLING:     // - (void)addAsSibling:(ICNode *)aNode
             {
                 result = [parent addAsSibling:thisNode];
-                ops = @"ADD_AS_SIBLING";
+                break;
+            }
+            case ADD_AS_OLDER_SIBLING:
+            {
+                result = [parent addAsOlderSibling:thisNode];
                 break;
             }
             default:
@@ -282,12 +285,26 @@ int runs;
 //        NSLog(@"===============================");
 //        NSLog(@"\nParent: %@\nChild: %@\nOperation: %@\n", parent.printData, thisNode.printData, ops);
 //        NSLog(@"%@", [root printTree]);
+        [self writeStringToDesktop:root.printTree toFileName:@"afterAdding"];
+        NSString *debug = [NSString stringWithFormat:@"thisNode: %@, parent: %@", [thisNode description], [parent description]];
+        NSLog(@"%@", debug);
         // if parent == root, add as sibling will return NO and do nothing because root can not have sibling
-        if (parent == root && (which == ADD_AS_SIBLING_TO_NODE || which == ADD_AS_SIBLING_TO_INDEX || which == ADD_AS_SIBLING)) {
+        if (parent == root && (which == ADD_AS_SIBLING_TO_NODE || which == ADD_AS_SIBLING_TO_INDEX || which == ADD_AS_SIBLING || which == ADD_AS_OLDER_SIBLING)) {
             XCTAssertEqual(result, NO, @"result of operation should be %hhd", NO);
             XCTAssertTrue([root contains:parent], @"root should still contain parent");
             XCTAssertTrue(![root contains:thisNode], @"root should not contain %@", thisNode.description);
             XCTAssertEqual((int)[root countOfAllChildren], countOfRoot, @"Total children count for root remain the same");
+            continue;
+        }
+        if (which == ADD_AS_OLDER_SIBLING) {
+            if (parent.isRoot) {
+                XCTAssertFalse(result, @"");
+                continue;
+            }
+            XCTAssertTrue(thisNode.hasYoungerSibling, @"");
+            XCTAssertEqual(thisNode.indexOfParent, index, @"");
+            XCTAssertEqual(parent.indexOfParent, index+1, @"");
+            XCTAssertTrue(root.validate, @"");
             continue;
         }
         // general validations
@@ -316,7 +333,7 @@ int runs;
             XCTAssertEqualObjects(thisNode.parent, parent, @"thisNode(%@) parent should be %@", thisNode.description, parent.description);
         }
     }
-    
+    XCTAssertTrue(root.validate, @"");
     // test contains
     for (ICNode *node in tree.flatThisNode) {
         XCTAssertFalse([root contains:node], @"");

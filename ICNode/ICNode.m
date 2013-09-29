@@ -239,6 +239,21 @@
     return YES;
 }
 
+- (BOOL)addAsOlderSibling:(ICNode *)aNode
+{
+    if (self.isRoot || !aNode)
+        return NO;
+    int index = self.indexOfParent;
+    aNode.parent = self.parent;
+    aNode.indexOfParent = index;
+    [self.parent.children insertObject:aNode atIndex:index];
+    for (int i = index+1; i < self.parent.children.count; i++) {
+        ICNode *node = (ICNode *)[self.parent.children objectAtIndex:i];
+        node.indexOfParent++;
+    }
+    return YES;
+}
+
 #pragma mark - remove node from tree
 - (BOOL)removeAllChildrenFromIndex:(NSInteger)index
 {
@@ -295,6 +310,11 @@
 // TODO: need implementation
 - (BOOL)moveUp
 {
+    ICNode *prev = self.getPreviousNode;
+    // can not move up root
+    if (self.isRoot || prev.isRoot || !prev || !self)
+        return NO;
+    
     return NO;
 }
 // TODO: need implementation
@@ -427,7 +447,8 @@
 - (void)setIndexOfParent:(int)index
 {
     if (index < 0) {
-        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"indexOfParent can not be less than 0 as it represents an array index" userInfo:nil];
+        NSString *reason = [NSString stringWithFormat:@"[%@] indexOfParent(%d) can not be less than 0 as it represents an array index", [self description], index];
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
     }
     indexOfParent = index;
 }
