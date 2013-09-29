@@ -279,12 +279,16 @@
 // TODO: need test
 - (BOOL)moveNodeFromIndex:(NSInteger)fromIndex toIndex:(NSInteger)toIndex
 {
+    if (![self checkIndexInBound:fromIndex] || ![self checkIndexInBound:toIndex])
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"ICNode moveNodeFromIndex: either fromIndex or toIndex is invalid" userInfo:nil];
+    if (fromIndex == toIndex)
+        return NO;
     ICNode *nodeToMove = [self nodeAtIndex:fromIndex];
     ICNode *nodeToAppend = [self nodeAtIndex:toIndex];
-    if(!nodeToMove || !nodeToAppend)
-        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"Either index not found." userInfo:nil];
     if (nodeToMove.isRoot)      // root can not be moved
         return NO;
+    if ([nodeToMove contains:nodeToAppend])
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"ICNode moveNodeFromIndex: nodeToAppend is a child of nodeToMove" userInfo:nil];
     // remove nodeToMove from its parent children
     [nodeToMove detach];
     // add nodeToMove as a child to nodeToAppend

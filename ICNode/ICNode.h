@@ -189,11 +189,13 @@ count
 
 #pragma mark - Moving node
 /*
- Append the given index node and its subtree as a child to the toIndex node
+ Append the given index node and its subtree as a child to the toIndex node. Can not move a node to its child because we are moving the entire subtree instead of a single node.
  */
 // @param fromIndex: The index of ICNode which will be moved
 // @param toIndex: The index of ICNode which will be the parent of fromIndex node
-// @return BOOL: whether the moving operation is able to complete or not
+// @return BOOL: whether the moving operation is able to complete or not. return NO if fromIndex is root
+// @throw NSInvalidArgumentException if given fromIndex or toIndex is out of bound
+// @throw NSInvalidArgumentException if toIndex is a child of fromIndex
 - (BOOL)moveNodeFromIndex:(NSInteger)fromIndex toIndex:(NSInteger)toIndex;
 /*
  As per array view, move this node and all its children up for 1

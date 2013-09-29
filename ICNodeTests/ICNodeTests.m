@@ -42,6 +42,7 @@ typedef enum {
 @implementation ICNodeTests
 ICNode *root;   // a root node
 ICNode *tree;   // a sample tree
+int runs;
 
 - (void)setUp
 {
@@ -50,7 +51,7 @@ ICNode *tree;   // a sample tree
     root = [[ICNode alloc] initAsRootNode];
     tree = [[ICNode alloc] initAsRootNode];
     [self generateSampleTree];
-    [self generateRandomRoot:50];
+    runs = 500;
 }
 
 - (void)tearDown
@@ -80,7 +81,6 @@ ICNode *tree;   // a sample tree
 
 - (void)testInitWithData
 {
-    int runs = 15;
     
     NSMutableArray *candidate = [[NSMutableArray alloc] initWithArray:root.flatThisNode];
     
@@ -203,10 +203,8 @@ ICNode *tree;   // a sample tree
 
 - (void)testAdding
 {
-    int addruns = 50;
-    int removeruns = 20;
     
-    for (; addruns>0; addruns--) {
+    for (; runs>0; runs--) {
         // choose 1 node from candidate array to be the root of this node
         // this could be root
         ICNode *parent = (ICNode *)[root.flatThisNode objectAtIndex:(arc4random()%root.flatThisNode.count)];
@@ -307,10 +305,15 @@ ICNode *tree;   // a sample tree
     [self writeStringToDesktop:root.printTree toFileName:@"afteradd"];
     
     // END ADDING
+}
+
+- (void)testRemovingNode
+{
+    [self generateRandomRoot:500];
     // START REMOVING
     
     NSLog(@"Start removing...");
-    for (; removeruns>0; removeruns--) {
+    for (; runs>0; runs--) {
         // pick a random node, this could be root
         int baseIndex = arc4random()%root.flatThisNode.count;
         ICNode *baseNode = [root.flatThisNode objectAtIndex:baseIndex];
@@ -345,6 +348,10 @@ ICNode *tree;   // a sample tree
             }
             case REMOVE_NODE_AT_INDEX:
             {
+                if (targetNode.isRoot){
+                    XCTAssertEqual([baseNode removeNodeAtIndex:index], NO, @"");
+                    continue;
+                }
                 result = [baseNode removeNodeAtIndex:index];
                 XCTAssertEqual(root.countOfAllChildren, totalChildrenCountForRoot - count - 1, @"%@", [targetNode description]);
                 XCTAssertFalse([root contains:targetNode], @"");
@@ -359,6 +366,10 @@ ICNode *tree;   // a sample tree
             }
             case DETACH:
             {
+                if (targetNode.isRoot){
+                    XCTAssertEqual([baseNode removeNodeAtIndex:index], NO, @"");
+                    continue;
+                }
                 result = [targetNode detach];
                 XCTAssertEqual(root.countOfAllChildren, totalChildrenCountForRoot - count - 1, @"%@", [targetNode description]);
                 XCTAssertFalse([root contains:targetNode], @"");
@@ -379,6 +390,7 @@ ICNode *tree;   // a sample tree
     }
     
     XCTAssertFalse(root.detach, @"Can not detach root");
+    XCTAssertFalse([root removeNodeAtIndex:0], @"Can not remove root");
     XCTAssertTrue([root removeAllChildrenFromIndex:0], @"remove all children from root");
     XCTAssertTrue(root.countOfAllChildren == 0, @"");
     XCTAssertTrue(root.children.count == 0, @"");
@@ -388,7 +400,64 @@ ICNode *tree;   // a sample tree
 #pragma mark - test move
 - (void)testMove
 {
+
+    [self generateRandomRoot:100];
+    int countOfNode = root.countOfAllChildren;
     
+    for (; runs>0; runs--) {
+        [self writeStringToDesktop:root.printTree toFileName:@"beforemove"];
+        int fromIndex = [self generateRandomIntWith:-20 withUpperBound:countOfNode];
+        int toIndex = [self generateRandomIntWith:-20 withUpperBound:countOfNode];
+        
+        // check if index out of bound
+        if (fromIndex < 0 || fromIndex > countOfNode || toIndex < 0 || toIndex > countOfNode) {
+            XCTAssertThrowsSpecificNamed([root moveNodeFromIndex:fromIndex toIndex:toIndex], NSException, NSInvalidArgumentException, @"");
+            continue;
+        }
+        // check if fromIndex == toIndex
+        if (fromIndex == toIndex) {
+            XCTAssertFalse([root moveNodeFromIndex:fromIndex toIndex:toIndex], @"fromIndex is equal to toIndex which will do nothing. %d -> %d", fromIndex, toIndex);
+            continue;
+        }
+        ICNode *nodeToMove = [root nodeAtIndex:fromIndex];
+        ICNode *parentOfNodeToMove = nodeToMove.parent;
+        int oldImmediateChildrenCountOfParentOfNodeToMove = parentOfNodeToMove.countOfImmediateChildren;
+        ICNode *nodeToAppend = [root nodeAtIndex:toIndex];
+        int oldImmediateChildrenCountOfNodeToAppend = nodeToAppend.countOfImmediateChildren;
+        
+        NSString *debug = [NSString stringWithFormat:@"nodeToMove(%d): %@, nodeToAppend(%d): %@", fromIndex, [nodeToMove description], toIndex, [nodeToAppend description]];
+        
+        NSLog(@"%@", debug);
+        
+        // check moving root node
+        if (nodeToMove.isRoot) {
+            XCTAssertFalse([root moveNodeFromIndex:fromIndex toIndex:toIndex], @"should return NO if toIndex is root. %@", debug);
+            continue;
+        }
+        if ([nodeToMove contains:nodeToAppend]) {
+            XCTAssertThrowsSpecificNamed([root moveNodeFromIndex:fromIndex toIndex:toIndex], NSException, NSInvalidArgumentException, @"Can not move node to its child");
+            continue;
+        }
+        // general validation
+        XCTAssertNoThrow([root moveNodeFromIndex:fromIndex toIndex:toIndex], @"Should not throw any exception. %@", debug);
+        
+        int newImmediateChildrenCountOfParentOfNodeToMove = parentOfNodeToMove.countOfImmediateChildren;
+        int newImmediateChildrenCountOfNodeToAppend = nodeToAppend.countOfImmediateChildren;
+
+        
+        XCTAssertTrue([nodeToAppend contains:nodeToMove], @"%@", debug);
+        XCTAssertEqualObjects([nodeToAppend getLastImmediateChild], nodeToMove, @"After moving, nodeToAppend's last immediate child is nodeToMove. %@", debug);
+        XCTAssertFalse(nodeToAppend.isLeaf, @"After moving nodeToMove to nodeToAppend, nodeToAppend must not be a leaf. %@", debug);
+        if (parentOfNodeToMove == nodeToAppend){
+            XCTAssertEqual(oldImmediateChildrenCountOfParentOfNodeToMove, newImmediateChildrenCountOfParentOfNodeToMove, @"%@", debug);
+            XCTAssertEqual(oldImmediateChildrenCountOfNodeToAppend, newImmediateChildrenCountOfNodeToAppend, @"%@", debug);
+        }else{
+            XCTAssertEqual(oldImmediateChildrenCountOfParentOfNodeToMove - 1, newImmediateChildrenCountOfParentOfNodeToMove, @"%@", debug);
+            XCTAssertEqual(oldImmediateChildrenCountOfNodeToAppend + 1, newImmediateChildrenCountOfNodeToAppend, @"%@", debug);
+        }
+        
+        [self writeStringToDesktop:root.printTree toFileName:@"aftermove"];
+    }
 }
 
 #pragma mark - test indentation
@@ -545,6 +614,11 @@ ICNode *tree;   // a sample tree
 {
     NSString *fullpath = [NSString stringWithFormat:@"/Users/ifanchu/Desktop/%@.txt", filename];
     [aString writeToURL:[NSURL fileURLWithPath:fullpath] atomically:NO encoding:NSUTF8StringEncoding error:nil];
+}
+
+- (int)generateRandomIntWith:(int)lowerBound withUpperBound:(int)upperBound
+{
+    return lowerBound + arc4random() % (upperBound - lowerBound);
 }
 //- (void)testPrintSampleTree
 //{
