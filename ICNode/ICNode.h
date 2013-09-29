@@ -212,7 +212,7 @@ count
 /*
  As per the list view, perform left indent on this node
  */
-// @return YES if able to do left indent; NO otherwise
+// @return YES if able to do left indent; NO otherwise. Every node can be left indented except for those who is root or whose parent is root.
 - (BOOL)leftIndent;
 /*
  As per the list view, perform right indent on this node

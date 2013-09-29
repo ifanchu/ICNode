@@ -198,6 +198,28 @@ int runs;
     }
 }
 
+- (void)testGetNextAndPreviousNode
+{
+    [self generateRandomRoot:100];
+    
+    [self writeStringToDesktop:root.printTree toFileName:@"testGetNextAndPreviousNode"];
+    
+    for (; runs>0; runs--) {
+        int index = arc4random()%(root.countOfAllChildren+1);
+        ICNode *thisNode = [root nodeAtIndex:index];
+        ICNode *prev = [root nodeAtIndex:(index-1)];
+        ICNode *next = [root nodeAtIndex:(index+1)];
+        
+        NSString *debug = [NSString stringWithFormat:@"thisNode: %@, prev: %@, next: %@", [thisNode description], [prev description], [next description]];
+        
+        if (index == 0) {
+            XCTAssertNil([thisNode getPreviousNode], @"%@", debug);
+        }else if (index == root.countOfAllChildren){
+            XCTAssertNil([thisNode getNextNode], @"%@", debug);
+        }
+    }
+}
+
 
 #pragma mark - test adding and removing
 
@@ -461,12 +483,78 @@ int runs;
 }
 
 #pragma mark - test indentation
-- (void)testLeftIndent
+- (void)testIndentation
 {
-    // target's previous node is root
-    // target's previous node depth is equal to target's
-    // target's previous node depth is larger than target's
-    // target's previous node depth is less than target's
+    [self generateRandomRoot:100];
+    for (; runs>0; runs--) {
+        [self writeStringToDesktop:root.printTree toFileName:@"beforeIndentation"];
+        
+        // target could be root
+        int index = [self generateRandomIntWith:0 withUpperBound:(root.countOfAllChildren)];
+        ICNode *target = [root nodeAtIndex:index];
+        NSString *debug = [NSString stringWithFormat:@"target: %@", [target description]];
+        NSLog(@"%@", debug);
+        
+        int which = arc4random()%2;
+        
+        switch (which) {
+            case 0:     // left indent
+            {
+                if (target.isRoot || target.parent.isRoot) {
+                    XCTAssertFalse([target leftIndent], @"");
+                    continue;
+                }
+                ICNode *parent = target.parent;
+                ICNode *grandParent = [parent parent];     // could be root
+                XCTAssertTrue(grandParent, @"%@", debug);
+                XCTAssertTrue([grandParent contains:target], @"%@", debug);
+                XCTAssertTrue([parent contains:target], @"%@", debug);
+                XCTAssertFalse([grandParent.children containsObject:target], @"%@", debug);
+                // left indent
+                XCTAssertTrue([target leftIndent], @"%@", debug);
+                [self writeStringToDesktop:root.printTree toFileName:@"afterIndentation"];
+                // validation
+                XCTAssertTrue([grandParent.children containsObject:target], @"%@", debug);
+                XCTAssertEqualObjects(grandParent.getLastImmediateChild, target, @"%@", debug);
+                XCTAssertFalse([parent contains:target], @"%@", debug);
+                XCTAssertTrue(parent.hasYoungerSibling, @"");
+                break;
+            }
+            case 1:     // right indent
+            {
+                if (target.isRoot) {
+                    XCTAssertFalse([target rightIndent], @"root can not right indent. %@", debug);
+                    continue;
+                }
+                ICNode *prev = [target getPreviousNode];
+                ICNode *parent = target.parent;
+                ICNode *olderSibling = [target getOlderSibling];
+                int depthOfPrev = prev.depth;
+                int depthOfTarget = target.depth;
+                // do right indent
+                BOOL result = [target rightIndent];
+                [self writeStringToDesktop:root.printTree toFileName:@"afterIndentation"];
+                if (depthOfPrev < depthOfTarget) {
+                    XCTAssertFalse(result, @"%@", debug);
+                    continue;
+                }else if (depthOfPrev == depthOfTarget){      // target will become prev's child
+                    XCTAssertEqualObjects(prev.getLastImmediateChild, target, @"%@", debug);
+                    XCTAssertFalse([parent.children containsObject:target], @"%@", debug);
+                    XCTAssertEqual(index, [root indexOf:target], @"%@", debug);
+                    continue;
+                }else if(depthOfPrev > depthOfTarget){        // target will become older sibling's child
+                    XCTAssertEqual(index, [root indexOf:target], @"%@", debug);
+                    XCTAssertEqualObjects(olderSibling.getLastImmediateChild, target, @"%@", debug);
+                    XCTAssertFalse([parent.children containsObject:target], @"%@", debug);
+                    continue;
+                }
+                
+                break;
+            }
+            default:
+                break;
+        }
+    }
 }
 
 - (void)testRightIndent

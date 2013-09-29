@@ -79,7 +79,6 @@
 
 - (BOOL)isLastChild
 {
-    // TODO: what to do if this is root?
     return (self.isRoot ? YES:(self.indexOfParent == self.parent.children.count - 1));
 }
 
@@ -150,7 +149,6 @@
 {
     if (![self contains:aNode])
         return NSNotFound;
-    // TODO: use indexOfObjectIdenticalTo or indexOfObject?
     return [self.flatThisNode indexOfObjectIdenticalTo: aNode];
 }
 
@@ -166,20 +164,19 @@
     return [[self getRootNode] indexOf:self];
 }
 
-// TODO: need test
 - (ICNode *)getPreviousNode
 {
     if (self.isRoot)
-        return NO;
+        return nil;
     return [[self getRootNode] nodeAtIndex:self.indexFromRoot-1];
 }
-// TODO: need test
+
 - (ICNode *)getNextNode
 {
     int index = self.indexFromRoot;
     // very last child has no next node
     if (index == (int)self.getRootNode.countOfAllChildren)
-        return NO;
+        return nil;
     ICNode *target = [self.getRootNode nodeAtIndex:(index + 1)];
     if (target == nil)
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"ICNode.m getNextNode: target should have next node" userInfo:nil];
@@ -312,37 +309,37 @@
 {
     if(self.isRoot || self.parent.isRoot)
         return NO;
+    ICNode *aParent = self.parent;
     [self detach];
-    [self.parent addAsSibling:self];
+    [aParent addAsSibling:self];
     return YES;
 }
 
 // TODO: need test
 - (BOOL)rightIndent
 {
-    int thisIndex = [self indexFromRoot];
-    if (thisIndex == 0)     // can not right indent root
+    if (self.isRoot)     // can not right indent root
         return NO;
     // get previous node
     ICNode *prev = self.getPreviousNode;
+    ICNode *olderSibling = self.getOlderSibling;
     // if previous node has smaller depth, not able to right indent
     if (prev.depth < self.depth){
         return NO;
     }
-    else if (prev.indexOfParent == self.indexOfParent){
+    else if (prev.depth == self.depth){
         // if equals, move self to as prev's child
         [self detach];
         [prev addAsChild:self];
     }else{
         // if prev depth > self depth, this means there must be a previous sibling, move this node to be its child
         [self detach];
-        [[self getOlderSibling] addAsChild: self];
+        [olderSibling addAsChild: self];
     }
 
     return YES;
 }
 #pragma mark - helper methods
-// TODO: need test
 -(BOOL)checkIndexInBound:(NSInteger)index
 {
     return index >= 0 && index < self.flatThisNode.count;
@@ -350,7 +347,6 @@
 
 - (NSString *)description
 {
-//    NSString *className = NSStringFromClass([self class]);
     if(self.isRoot)
         return [self.data description];
     return [NSString stringWithFormat:@"%@(%@[%d])", [self.data description], [self.parent.data description], self.indexOfParent];
