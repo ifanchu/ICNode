@@ -20,7 +20,8 @@ typedef enum {
     ADD_AS_SIBLING_TO_NODE=3,
     ADD_AS_CHILD=4,
     ADD_AS_SIBLING=5,
-    ADD_AS_OLDER_SIBLING=6
+    ADD_AS_OLDER_SIBLING=6,
+    ADD_AS_FIRST_CHILD=7
 } ADDING_OPERATIONS;
 
 typedef enum {
@@ -52,7 +53,7 @@ int runs;
     root = [[ICNode alloc] initAsRootNode];
     tree = [[ICNode alloc] initAsRootNode];
     [self generateSampleTree];
-    runs = 200;
+    runs = 500;
 }
 
 - (void)tearDown
@@ -221,13 +222,25 @@ int runs;
     }
 }
 
+- (void)testGetNextNodeWithLowerDepth
+{
+    //using tree
+    ICNode *node1 = [tree nodeAtIndex:1];
+    XCTAssertEqualObjects(node1.getNextNodeWithLowerOrEqualDepth, [tree nodeAtIndex:10], @"");
+    ICNode *node2 = [tree nodeAtIndex:2];
+    XCTAssertEqualObjects(node2.getNextNodeWithLowerOrEqualDepth, [tree nodeAtIndex:9], @"");
+    ICNode *node10 = [tree nodeAtIndex:10];
+    XCTAssertNil(node10.getNextNodeWithLowerOrEqualDepth, @"");
+    XCTAssertNil(tree.getNextNodeWithLowerOrEqualDepth, @"");
+}
+
 
 #pragma mark - test adding and removing
 
 - (void)testAdding
 {
     [self generateRandomRoot:50];
-    
+    int nOfEach[8] = {0,0,0,0,0,0,0,0};
     for (; runs>0; runs--) {
         // choose 1 node from candidate array to be the root of this node
         // this could be root
@@ -241,8 +254,11 @@ int runs;
         BOOL result;
         
         [self writeStringToDesktop:root.printTree toFileName:@"beforeAdding"];
+        NSString *debug = [NSString stringWithFormat:@"thisNode: %@, parent: %@", [thisNode description], [parent description]];
+        NSLog(@"%@", debug);
         
-        int which = arc4random()%7;
+        int which = arc4random()%8;
+        nOfEach[which]++;
         switch (which) {
             case ADD_AS_CHILD_TO_INDEX:     // - (NSInteger)addAsChildToIndex:(NSInteger)index withNode:(ICNode *)aNode
             {
@@ -279,6 +295,18 @@ int runs;
                 result = [parent addAsOlderSibling:thisNode];
                 break;
             }
+            case ADD_AS_FIRST_CHILD:
+            {
+                result = [parent addAsFirstChild:thisNode];
+                [self writeStringToDesktop:root.printTree toFileName:@"afterAdding"];
+                XCTAssertTrue(result, @"%@", debug);
+                XCTAssertEqualObjects(parent.getNextNode, thisNode, @"%@", debug);
+                XCTAssertEqualObjects([parent.children objectAtIndex:0], thisNode, @"%@", debug);
+                XCTAssertEqualObjects(thisNode.parent, parent, @"%@", debug);
+                XCTAssertEqualObjects(thisNode.getPreviousNode, parent, @"%@", debug);
+                XCTAssertTrue([parent contains:thisNode], @"%@", debug);
+                continue;
+            }
             default:
                 break;
         }
@@ -286,8 +314,7 @@ int runs;
 //        NSLog(@"\nParent: %@\nChild: %@\nOperation: %@\n", parent.printData, thisNode.printData, ops);
 //        NSLog(@"%@", [root printTree]);
         [self writeStringToDesktop:root.printTree toFileName:@"afterAdding"];
-        NSString *debug = [NSString stringWithFormat:@"thisNode: %@, parent: %@", [thisNode description], [parent description]];
-        NSLog(@"%@", debug);
+
         // if parent == root, add as sibling will return NO and do nothing because root can not have sibling
         if (parent == root && (which == ADD_AS_SIBLING_TO_NODE || which == ADD_AS_SIBLING_TO_INDEX || which == ADD_AS_SIBLING || which == ADD_AS_OLDER_SIBLING)) {
             XCTAssertEqual(result, NO, @"result of operation should be %hhd", NO);
@@ -342,7 +369,7 @@ int runs;
 //    NSLog(@"===============================");
 //    NSLog(@"%@", root.printTree);
     [self writeStringToDesktop:root.printTree toFileName:@"afteradd"];
-    
+    NSLog(@"%d, %d,%d,%d,%d,%d,%d,%d", nOfEach[0], nOfEach[1],nOfEach[2],nOfEach[3],nOfEach[4],nOfEach[5],nOfEach[6],nOfEach[7]);
     // END ADDING
 }
 
@@ -501,7 +528,61 @@ int runs;
 
 - (void)testMoveUpAndDown
 {
-    
+    [self generateRandomRoot:100];
+    for (; runs>0; runs--) {
+        
+        
+        ICNode *target = [root nodeAtIndex:(arc4random()%(root.countOfAllChildren))];
+        if(target.isRoot){
+            XCTAssertFalse(target.moveUp, @"");
+            XCTAssertFalse(target.moveDown, @"");
+            continue;
+        }
+        ICNode *prev = target.getPreviousNode;
+        ICNode *next = target.getNextNodeWithLowerOrEqualDepth;
+        ICNode *parent = target.parent;
+        int indexOfParent = target.indexOfParent;
+        
+        int which = 1 + arc4random()%2;
+        NSString *debug = [NSString stringWithFormat:@"operation: %d, target: %@, prev: %@, next: %@", which, [target description], [prev description], [next description]];
+        NSLog(@"%@", debug);
+        [self writeStringToDesktop:root.printTree toFileName:@"beforeMoveUpAndDown"];
+        switch (which) {
+            case MOVEUP:
+            {
+                if (target.isRoot || prev.isRoot || !prev || !target){
+                    XCTAssertFalse(target.moveUp, @"%@", debug);
+                    continue;
+                }
+                XCTAssertTrue(target.moveUp, @"%@", debug);
+                [self writeStringToDesktop:root.printTree toFileName:@"afterMoveUpAndDown"];
+                XCTAssertTrue(prev.hasOlderSibling, @"%@", debug);
+                XCTAssertTrue([prev.parent contains:target], @"%@", debug);
+                XCTAssertTrue(target.hasYoungerSibling, @"%@", debug);
+                break;
+            }
+            case MOVEDOWN:
+            {
+                BOOL result = target.moveDown;
+                if (result) {
+                    if (next.depth == target.depth) {
+                        XCTAssertTrue([next.parent.children containsObject:target], @"%@", debug);
+                    }else{
+                        XCTAssertTrue([next.children containsObject:target], @"%@", debug);
+                    }
+                }else{
+                    XCTAssertEqual(indexOfParent, target.indexOfParent, @"");
+                }
+                XCTAssertTrue([root contains:target], @"%@", debug);
+                [self writeStringToDesktop:root.printTree toFileName:@"afterMoveUpAndDown"];
+                break;
+            }
+            default:
+                break;
+        }
+        XCTAssertTrue(root.validate, @"%@", debug);
+        
+    }
 }
 
 #pragma mark - test indentation

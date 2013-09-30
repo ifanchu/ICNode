@@ -130,6 +130,10 @@ count
  */
 // @return the ICNode right after this node as in array view; nil if this node is the very last node
 - (ICNode *)getNextNode;
+/*
+ Get the next node which has depth that is less than or equal to the depth of this node
+ */
+- (ICNode *)getNextNodeWithLowerOrEqualDepth;
 
 #pragma mark - Adding node to tree
 /*
@@ -161,6 +165,7 @@ count
 // @param aNode: an ICNode
 // @return YES if successfully added; NO otherwise
 - (BOOL)addAsChild:(ICNode *)aNode;
+- (BOOL)addAsFirstChild:(ICNode *)aNode;
 /*
  Add the given aNode as a sibling of this node which means to add aNode as the last child to the parnet of this node
  */

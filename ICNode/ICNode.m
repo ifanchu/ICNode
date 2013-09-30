@@ -173,14 +173,20 @@
 
 - (ICNode *)getNextNode
 {
-    int index = self.indexFromRoot;
-    // very last child has no next node
-    if (index == (int)self.getRootNode.countOfAllChildren)
-        return nil;
-    ICNode *target = [self.getRootNode nodeAtIndex:(index + 1)];
-    if (target == nil)
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"ICNode.m getNextNode: target should have next node" userInfo:nil];
+    ICNode *target = [self.getRootNode nodeAtIndex:(self.indexFromRoot + 1)];
     return target;
+}
+
+- (ICNode *)getNextNodeWithLowerOrEqualDepth
+{
+    for (int i = self.indexFromRoot+1; i < self.getRootNode.countOfAllChildren; i++){
+        ICNode *node = [self.getRootNode nodeAtIndex:i];
+        if (!node)
+            return nil;
+        if (node.depth <= self.depth)
+            return node;
+    }
+    return nil;
 }
 
 #pragma mark - Adding node to tree
@@ -227,6 +233,23 @@
     aNode.parent = self;
     [self.children addObject:aNode];
     aNode.indexOfParent = self.children.count - 1;
+    return YES;
+}
+
+- (BOOL)addAsFirstChild:(ICNode *)aNode
+{
+    if(!self || !aNode)
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"ICNode addAsFirstChild: either self or given node is null" userInfo:nil];
+    aNode.indexOfParent = 0;
+    aNode.parent = self;
+    [self.children insertObject:aNode atIndex:0];
+    if (self.countOfImmediateChildren > 1) {
+        for (int i = 1; i < self.children.count; i++) {
+            ICNode *node = [self.children objectAtIndex:i];
+            node.indexOfParent++;
+        }
+    }
+    
     return YES;
 }
 
@@ -306,21 +329,25 @@
     [nodeToAppend addAsChild:nodeToMove];
     return YES;
 }
-#warning What is the logic for moveup and movedown?
-// TODO: need implementation
 - (BOOL)moveUp
 {
     ICNode *prev = self.getPreviousNode;
     // can not move up root
     if (self.isRoot || prev.isRoot || !prev || !self)
         return NO;
-    
-    return NO;
+    [self detach];
+    [prev addAsOlderSibling:self];
+    return YES;
 }
-// TODO: need implementation
 - (BOOL)moveDown
 {
-    return NO;
+    ICNode *next = self.getNextNodeWithLowerOrEqualDepth;
+    if (self.isRoot || !next)
+        return NO;
+    [self detach];
+    
+    next.depth == self.depth ? [next addAsSibling:self]:[next addAsFirstChild:self];
+    return YES;
 }
 
 #pragma mark - indentation
