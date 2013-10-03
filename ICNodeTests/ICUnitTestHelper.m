@@ -19,4 +19,15 @@
     
     return randomString;
 }
++ (void)writeStringToDesktop:(NSString *)aString toFileName:(NSString *)filename
+{
+    NSString *fullpath = [NSString stringWithFormat:@"/Users/ifanchu/Desktop/%@.txt", filename];
+    [aString writeToURL:[NSURL fileURLWithPath:fullpath] atomically:NO encoding:NSUTF8StringEncoding error:nil];
+}
++ (int)generateRandomIntWith:(int)lowerBound withUpperBound:(int)upperBound
+{
+    if(lowerBound == upperBound)
+        return lowerBound;
+    return lowerBound + arc4random() % (upperBound - lowerBound);
+}
 @end

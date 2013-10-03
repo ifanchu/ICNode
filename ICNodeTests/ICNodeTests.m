@@ -204,7 +204,7 @@ int runs;
 {
     [self generateRandomRoot:100];
     
-    [self writeStringToDesktop:root.printTree toFileName:@"testGetNextAndPreviousNode"];
+    [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"testGetNextAndPreviousNode"];
     
     for (; runs>0; runs--) {
         int index = arc4random()%(root.countOfAllChildren+1);
@@ -253,7 +253,7 @@ int runs;
         ICNode *thisNode = [[ICNode alloc] initWithData:[ICUnitTestHelper getRandomString:10]];
         BOOL result;
         
-        [self writeStringToDesktop:root.printTree toFileName:@"beforeAdding"];
+        [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"beforeAdding"];
         NSString *debug = [NSString stringWithFormat:@"thisNode: %@, parent: %@", [thisNode description], [parent description]];
         NSLog(@"%@", debug);
         
@@ -298,7 +298,7 @@ int runs;
             case ADD_AS_FIRST_CHILD:
             {
                 result = [parent addAsFirstChild:thisNode];
-                [self writeStringToDesktop:root.printTree toFileName:@"afterAdding"];
+                [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"afterAdding"];
                 XCTAssertTrue(result, @"%@", debug);
                 XCTAssertEqualObjects(parent.getNextNode, thisNode, @"%@", debug);
                 XCTAssertEqualObjects([parent.children objectAtIndex:0], thisNode, @"%@", debug);
@@ -313,7 +313,7 @@ int runs;
 //        NSLog(@"===============================");
 //        NSLog(@"\nParent: %@\nChild: %@\nOperation: %@\n", parent.printData, thisNode.printData, ops);
 //        NSLog(@"%@", [root printTree]);
-        [self writeStringToDesktop:root.printTree toFileName:@"afterAdding"];
+        [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"afterAdding"];
 
         // if parent == root, add as sibling will return NO and do nothing because root can not have sibling
         if (parent == root && (which == ADD_AS_SIBLING_TO_NODE || which == ADD_AS_SIBLING_TO_INDEX || which == ADD_AS_SIBLING || which == ADD_AS_OLDER_SIBLING)) {
@@ -344,6 +344,10 @@ int runs;
         XCTAssertTrue(thisNode.isLeaf, @"%@ should be a leaf right after adding", thisNode.description);
         XCTAssertEqualObjects(thisNode.getRootNode, root, @"%@ root node should be root", thisNode.description);
         XCTAssertTrue(!thisNode.isRoot, @"%@ should not be root", thisNode.description);
+        XCTAssertFalse([thisNode addAsChild:root], @"");
+        XCTAssertFalse([thisNode addAsFirstChild:root], @"");
+        XCTAssertFalse([thisNode addAsOlderSibling:root], @"");
+        XCTAssertFalse([thisNode addAsSibling:root], @"");
         // validations for add sibling
         if (which == ADD_AS_SIBLING_TO_NODE || which == ADD_AS_SIBLING_TO_INDEX || which == ADD_AS_SIBLING) {
             XCTAssertEqual((int)parent.children.count, countOfParent, @"parent's children count should remain the same");
@@ -368,7 +372,7 @@ int runs;
     
 //    NSLog(@"===============================");
 //    NSLog(@"%@", root.printTree);
-    [self writeStringToDesktop:root.printTree toFileName:@"afteradd"];
+    [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"afteradd"];
     NSLog(@"%d, %d,%d,%d,%d,%d,%d,%d", nOfEach[0], nOfEach[1],nOfEach[2],nOfEach[3],nOfEach[4],nOfEach[5],nOfEach[6],nOfEach[7]);
     // END ADDING
 }
@@ -451,7 +455,7 @@ int runs;
             default:
                 break;
         }
-        [self writeStringToDesktop:root.printTree toFileName:@"afterremove"];
+        [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"afterremove"];
         targetNode = nil;
     }
     
@@ -471,9 +475,9 @@ int runs;
     int countOfNode = root.countOfAllChildren;
     
     for (; runs>0; runs--) {
-        [self writeStringToDesktop:root.printTree toFileName:@"beforemove"];
-        int fromIndex = [self generateRandomIntWith:-20 withUpperBound:countOfNode];
-        int toIndex = [self generateRandomIntWith:-20 withUpperBound:countOfNode];
+        [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"beforemove"];
+        int fromIndex = [ICUnitTestHelper generateRandomIntWith:-20 withUpperBound:countOfNode];
+        int toIndex = [ICUnitTestHelper generateRandomIntWith:-20 withUpperBound:countOfNode];
         
         // check if index out of bound
         if (fromIndex < 0 || fromIndex > countOfNode || toIndex < 0 || toIndex > countOfNode) {
@@ -522,7 +526,7 @@ int runs;
             XCTAssertEqual(oldImmediateChildrenCountOfNodeToAppend + 1, newImmediateChildrenCountOfNodeToAppend, @"%@", debug);
         }
         
-        [self writeStringToDesktop:root.printTree toFileName:@"aftermove"];
+        [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"aftermove"];
     }
 }
 
@@ -546,7 +550,7 @@ int runs;
         int which = 1 + arc4random()%2;
         NSString *debug = [NSString stringWithFormat:@"operation: %d, target: %@, prev: %@, next: %@", which, [target description], [prev description], [next description]];
         NSLog(@"%@", debug);
-        [self writeStringToDesktop:root.printTree toFileName:@"beforeMoveUpAndDown"];
+        [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"beforeMoveUpAndDown"];
         switch (which) {
             case MOVEUP:
             {
@@ -555,7 +559,7 @@ int runs;
                     continue;
                 }
                 XCTAssertTrue(target.moveUp, @"%@", debug);
-                [self writeStringToDesktop:root.printTree toFileName:@"afterMoveUpAndDown"];
+                [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"afterMoveUpAndDown"];
                 XCTAssertTrue(prev.hasOlderSibling, @"%@", debug);
                 XCTAssertTrue([prev.parent contains:target], @"%@", debug);
                 XCTAssertTrue(target.hasYoungerSibling, @"%@", debug);
@@ -574,7 +578,7 @@ int runs;
                     XCTAssertEqual(indexOfParent, target.indexOfParent, @"");
                 }
                 XCTAssertTrue([root contains:target], @"%@", debug);
-                [self writeStringToDesktop:root.printTree toFileName:@"afterMoveUpAndDown"];
+                [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"afterMoveUpAndDown"];
                 break;
             }
             default:
@@ -590,10 +594,10 @@ int runs;
 {
     [self generateRandomRoot:100];
     for (; runs>0; runs--) {
-        [self writeStringToDesktop:root.printTree toFileName:@"beforeIndentation"];
+        [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"beforeIndentation"];
         
         // target could be root
-        int index = [self generateRandomIntWith:0 withUpperBound:(root.countOfAllChildren)];
+        int index = [ICUnitTestHelper generateRandomIntWith:0 withUpperBound:(root.countOfAllChildren)];
         ICNode *target = [root nodeAtIndex:index];
         NSString *debug = [NSString stringWithFormat:@"target: %@", [target description]];
         NSLog(@"%@", debug);
@@ -615,7 +619,7 @@ int runs;
                 XCTAssertFalse([grandParent.children containsObject:target], @"%@", debug);
                 // left indent
                 XCTAssertTrue([target leftIndent], @"%@", debug);
-                [self writeStringToDesktop:root.printTree toFileName:@"afterIndentation"];
+                [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"afterIndentation"];
                 // validation
                 XCTAssertTrue([grandParent.children containsObject:target], @"%@", debug);
                 XCTAssertEqualObjects(grandParent.getLastImmediateChild, target, @"%@", debug);
@@ -636,7 +640,7 @@ int runs;
                 int depthOfTarget = target.depth;
                 // do right indent
                 BOOL result = [target rightIndent];
-                [self writeStringToDesktop:root.printTree toFileName:@"afterIndentation"];
+                [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"afterIndentation"];
                 if (depthOfPrev < depthOfTarget) {
                     XCTAssertFalse(result, @"%@", debug);
                     continue;
@@ -664,34 +668,34 @@ int runs;
 - (void)testRootAsChild
 {
     [self generateRandomRoot:100];
-    [self writeStringToDesktop:root.printTree toFileName:@"beforeTestRootAsChild"];
+    [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"beforeTestRootAsChild"];
     
     ICNode *node = [root nodeAtIndex:(1 + arc4random()%98)];
     
     XCTAssertFalse([node addAsChild:root], @"");
-    [self writeStringToDesktop:root.printTree toFileName:@"afterTestRootAsChild"];
+    [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"afterTestRootAsChild"];
 }
 
 #pragma mark - test helper
 - (void)testValidate
 {
     [self generateRandomRoot:300];
-    [self writeStringToDesktop:root.printTree toFileName:@"testValidate"];
+    [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"testValidate"];
     XCTAssertTrue([root validate], @"");
 }
 
 #pragma mark - unit test helper
-- (NSString *)getRandomString:(int)len
-{
-    NSString *LETTERS = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    NSMutableString *randomString = [NSMutableString stringWithCapacity: len];
-    
-    for (int i=0; i<len; i++) {
-        [randomString appendFormat: @"%C", [LETTERS characterAtIndex: arc4random() % [LETTERS length]]];
-    }
-    
-    return randomString;
-}
+//- (NSString *)getRandomString:(int)len
+//{
+//    NSString *LETTERS = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+//    NSMutableString *randomString = [NSMutableString stringWithCapacity: len];
+//    
+//    for (int i=0; i<len; i++) {
+//        [randomString appendFormat: @"%C", [LETTERS characterAtIndex: arc4random() % [LETTERS length]]];
+//    }
+//    
+//    return randomString;
+//}
 /*
  root
  |-- node1
@@ -802,29 +806,31 @@ int runs;
     }
 }
 
-- (void)writeStringToDocumentDirectory:(NSString *)aString
-{
-    NSString *filePath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    NSString *fileName = @"tree.txt";
-    NSString *fileAtPath = [filePath stringByAppendingPathComponent:fileName];
-    
-    if (![[NSFileManager defaultManager] fileExistsAtPath:fileAtPath]) {
-        [[NSFileManager defaultManager] createFileAtPath:fileAtPath contents:nil attributes:nil];
-    }
-    
-    [[aString dataUsingEncoding:NSUTF8StringEncoding] writeToFile:fileAtPath atomically:NO];
-}
+//- (void)writeStringToDocumentDirectory:(NSString *)aString
+//{
+//    NSString *filePath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+//    NSString *fileName = @"tree.txt";
+//    NSString *fileAtPath = [filePath stringByAppendingPathComponent:fileName];
+//    
+//    if (![[NSFileManager defaultManager] fileExistsAtPath:fileAtPath]) {
+//        [[NSFileManager defaultManager] createFileAtPath:fileAtPath contents:nil attributes:nil];
+//    }
+//    
+//    [[aString dataUsingEncoding:NSUTF8StringEncoding] writeToFile:fileAtPath atomically:NO];
+//}
 
-- (void)writeStringToDesktop:(NSString *)aString toFileName:(NSString *)filename
-{
-    NSString *fullpath = [NSString stringWithFormat:@"/Users/ifanchu/Desktop/%@.txt", filename];
-    [aString writeToURL:[NSURL fileURLWithPath:fullpath] atomically:NO encoding:NSUTF8StringEncoding error:nil];
-}
+//- (void)writeStringToDesktop:(NSString *)aString toFileName:(NSString *)filename
+//{
+//    NSString *fullpath = [NSString stringWithFormat:@"/Users/ifanchu/Desktop/%@.txt", filename];
+//    [aString writeToURL:[NSURL fileURLWithPath:fullpath] atomically:NO encoding:NSUTF8StringEncoding error:nil];
+//}
 
-- (int)generateRandomIntWith:(int)lowerBound withUpperBound:(int)upperBound
-{
-    return lowerBound + arc4random() % (upperBound - lowerBound);
-}
+//- (int)generateRandomIntWith:(int)lowerBound withUpperBound:(int)upperBound
+//{
+//    if(lowerBound == upperBound)
+//        return lowerBound;
+//    return lowerBound + arc4random() % (upperBound - lowerBound);
+//}
 //- (void)testPrintSampleTree
 //{
 //    NSLog(@"%@", tree.printTree);

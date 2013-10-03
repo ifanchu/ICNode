@@ -13,4 +13,6 @@ static const NSString *LETTERS = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRS
     
 }
 + (NSString *)getRandomString:(int)len;
++ (void)writeStringToDesktop:(NSString *)aString toFileName:(NSString *)filename;
++ (int)generateRandomIntWith:(int)lowerBound withUpperBound:(int)upperBound;
 @end

@@ -200,31 +200,27 @@
     ICNode *target = [self nodeAtIndex:index];
     if (!target || !aNode)
         return NO;
-    [target addAsChild:aNode];
-    return YES;
+    return [target addAsChild:aNode];
 }
 - (BOOL)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode
 {
     // first check if aParent is in this tree
     if (![self contains:aParent] || !aNode)
         return NO;
-    [aParent addAsChild:aNode];
-    return YES;
+    return [aParent addAsChild:aNode];
 }
 - (BOOL)addAsSiblingToIndex:(NSInteger)index withNode:(ICNode *)aNode
 {
     ICNode *target = [self nodeAtIndex:index];
     if(!target || target.isRoot || !aNode)
         return NO;
-    [target addAsSibling: aNode];
-    return YES;
+    return [target addAsSibling: aNode];
 }
 - (BOOL)addAsSiblingToNode:(ICNode *)targetNode withNode:(ICNode *)aNode
 {
     if(![self contains:targetNode] || !aNode || targetNode.isRoot)
         return NO;
-    [targetNode addAsSibling:aNode];
-    return YES;
+    return [targetNode addAsSibling:aNode];
 }
 
 - (BOOL)addAsChild:(ICNode *)aNode
@@ -244,7 +240,7 @@
 - (BOOL)addAsFirstChild:(ICNode *)aNode
 {
     if(!self || !aNode || aNode.isRoot)
-        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"ICNode addAsFirstChild: either self or given node is null" userInfo:nil];
+        return NO;
     aNode.indexOfParent = 0;
     aNode.parent = self;
     [self.children insertObject:aNode atIndex:0];
@@ -263,8 +259,7 @@
     if (self.isRoot || !aNode)        // can't add sibling to a root
         return NO;
     // add aNode to its parent
-    [self.parent addAsChild:aNode];
-    return YES;
+    return [self.parent addAsChild:aNode];
 }
 
 - (BOOL)addAsOlderSibling:(ICNode *)aNode
