@@ -540,7 +540,7 @@ int runs;
         }
         ICNode *prev = target.getPreviousNode;
         ICNode *next = target.getNextNodeWithLowerOrEqualDepth;
-        ICNode *parent = target.parent;
+//        ICNode *parent = target.parent;
         int indexOfParent = target.indexOfParent;
         
         int which = 1 + arc4random()%2;
