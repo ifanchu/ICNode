@@ -53,7 +53,7 @@ int runs;
     root = [[ICNode alloc] initAsRootNode];
     tree = [[ICNode alloc] initAsRootNode];
     [self generateSampleTree];
-    runs = 500;
+    runs = 5;
 }
 
 - (void)tearDown
@@ -658,6 +658,18 @@ int runs;
                 break;
         }
     }
+}
+
+#pragma mark - test infinite tree
+- (void)testRootAsChild
+{
+    [self generateRandomRoot:100];
+    [self writeStringToDesktop:root.printTree toFileName:@"beforeTestRootAsChild"];
+    
+    ICNode *node = [root nodeAtIndex:(1 + arc4random()%98)];
+    
+    [node addAsChild:root];
+    [self writeStringToDesktop:root.printTree toFileName:@"afterTestRootAsChild"];
 }
 
 #pragma mark - test helper

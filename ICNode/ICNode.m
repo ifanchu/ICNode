@@ -30,7 +30,7 @@
     }
     return self;
 }
-// deprecate init
+
 - (id)init
 {
     return [self initWithData:nil withParent:nil];
@@ -74,6 +74,7 @@
 
 - (NSInteger)depth
 {
+    // using recursive, if self is not root, depth is self.parent + 1
     return (self.isRoot ? 0:self.parent.depth+1);
 }
 
@@ -249,7 +250,7 @@
             node.indexOfParent++;
         }
     }
-    
+
     return YES;
 }
 
@@ -345,7 +346,7 @@
     if (self.isRoot || !next)
         return NO;
     [self detach];
-    
+
     next.depth == self.depth ? [next addAsSibling:self]:[next addAsFirstChild:self];
     return YES;
 }
@@ -479,4 +480,5 @@
     }
     indexOfParent = index;
 }
+//TODO: what if root is also a child?
 @end
