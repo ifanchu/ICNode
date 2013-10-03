@@ -479,5 +479,4 @@
     }
     indexOfParent = index;
 }
-//TODO: what if root is also a child?
 @end
