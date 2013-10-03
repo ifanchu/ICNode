@@ -15,7 +15,7 @@
 @synthesize data, parent, children, indexOfParent;
 
 #pragma mark - Initializers
-- (id)initWithData:(id)aData withParent:(ICNode *)aParent
+- (id)initWithData:(id)aData withParent:(ICNode *)aParent isRoot:(BOOL)isroot
 {
     [self setData:aData];
     self.children = [[NSMutableArray alloc] init];
@@ -24,26 +24,30 @@
         [[aParent children] addObject:self];                // add as the last child
         self.indexOfParent = self.parent.children.count - 1;
     }else{
-        // this is root
         [self setParent: nil];
         self.indexOfParent = 0;
     }
+    self.isRoot = isroot;
     return self;
+}
+- (id)initWithData:(id)aData withParent:(ICNode *)aParent
+{
+    return [self initWithData:aData withParent:aParent isRoot:NO];
 }
 
 - (id)init
 {
-    return [self initWithData:nil withParent:nil];
+    return [self initWithData:nil withParent:nil isRoot:NO];
 }
 
 - (id)initAsRootNode
 {
-    return [self initWithData:@"root" withParent:nil];
+    return [self initWithData:@"root" withParent:nil isRoot:YES];
 }
 
 - (id)initWithData:(id)aData
 {
-    return [self initWithData:aData withParent:nil];
+    return [self initWithData:aData withParent:nil isRoot:NO];
 }
 
 #pragma mark - Querying the tree
@@ -54,7 +58,7 @@
 
 - (BOOL)isRoot
 {
-    return self.parent == nil;
+    return self->_isRoot;
 }
 
 - (NSInteger)countOfAllChildren
@@ -225,7 +229,7 @@
 
 - (BOOL)addAsChild:(ICNode *)aNode
 {
-    if (!aNode)
+    if (!aNode || aNode.isRoot)
         return NO;
     // check if aNode has parent, if yes, remove aNode from parent's children
     if (aNode.parent) {
@@ -239,7 +243,7 @@
 
 - (BOOL)addAsFirstChild:(ICNode *)aNode
 {
-    if(!self || !aNode)
+    if(!self || !aNode || aNode.isRoot)
         @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"ICNode addAsFirstChild: either self or given node is null" userInfo:nil];
     aNode.indexOfParent = 0;
     aNode.parent = self;
@@ -265,7 +269,7 @@
 
 - (BOOL)addAsOlderSibling:(ICNode *)aNode
 {
-    if (self.isRoot || !aNode)
+    if (self.isRoot || !aNode || aNode.isRoot)
         return NO;
     int index = self.indexOfParent;
     aNode.parent = self.parent;

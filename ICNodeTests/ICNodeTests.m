@@ -53,7 +53,7 @@ int runs;
     root = [[ICNode alloc] initAsRootNode];
     tree = [[ICNode alloc] initAsRootNode];
     [self generateSampleTree];
-    runs = 5;
+    runs = 500;
 }
 
 - (void)tearDown
@@ -668,7 +668,7 @@ int runs;
     
     ICNode *node = [root nodeAtIndex:(1 + arc4random()%98)];
     
-    [node addAsChild:root];
+    XCTAssertFalse([node addAsChild:root], @"");
     [self writeStringToDesktop:root.printTree toFileName:@"afterTestRootAsChild"];
 }
 

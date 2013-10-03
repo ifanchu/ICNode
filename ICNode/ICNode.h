@@ -34,8 +34,11 @@ count
 @property (nonatomic, strong) NSMutableArray *children;
 // An integer which indicates the index of this node in its parent's children array
 @property (nonatomic) int indexOfParent;
+// A BOOL to indicate whether this ICNode is a root
+@property (nonatomic) BOOL isRoot;
 
 #pragma mark - Initializers
+- (id)initWithData:(id)aData withParent:(ICNode *)aParent isRoot:(BOOL)isroot;
 - (id)initWithData:(id)aData withParent:(ICNode *)aParent;
 - (id)initAsRootNode;
 - (id)initWithData:(id)aData;
