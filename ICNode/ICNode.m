@@ -45,6 +45,11 @@
     return [self initWithData:@"root" withParent:nil isRoot:YES];
 }
 
+- (id)initAsRootNodeWithData:(id)aData
+{
+    return [self initWithData:aData withParent:nil isRoot:YES];
+}
+
 - (id)initWithData:(id)aData
 {
     return [self initWithData:aData withParent:nil isRoot:NO];

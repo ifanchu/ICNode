@@ -41,6 +41,7 @@ count
 - (id)initWithData:(id)aData withParent:(ICNode *)aParent isRoot:(BOOL)isroot;
 - (id)initWithData:(id)aData withParent:(ICNode *)aParent;
 - (id)initAsRootNode;
+- (id)initAsRootNodeWithData:(id)aData;
 - (id)initWithData:(id)aData;
 
 #pragma mark - Querying the tree
