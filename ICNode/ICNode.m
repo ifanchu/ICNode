@@ -15,6 +15,7 @@
 @synthesize data, parent, children, indexOfParent;
 
 #pragma mark - Initializers
+// designated initializer
 - (id)initWithData:(id)aData withParent:(ICNode *)aParent isRoot:(BOOL)isroot
 {
     [self setData:aData];
