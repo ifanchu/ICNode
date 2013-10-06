@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		051AAC21180076ED00024C0B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 051AAC20180076ED00024C0B /* Security.framework */; };
 		055FB00817F1E05B00E55421 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 055FB00717F1E05B00E55421 /* Foundation.framework */; };
 		055FB01617F1E05B00E55421 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 055FB01517F1E05B00E55421 /* XCTest.framework */; };
 		055FB01717F1E05B00E55421 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 055FB00717F1E05B00E55421 /* Foundation.framework */; };
@@ -41,6 +42,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		051AAC20180076ED00024C0B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		055FB00417F1E05B00E55421 /* libICNode.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libICNode.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		055FB00717F1E05B00E55421 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		055FB00B17F1E05B00E55421 /* ICNode-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ICNode-Prefix.pch"; sourceTree = "<group>"; };
@@ -62,6 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				051AAC21180076ED00024C0B /* Security.framework in Frameworks */,
 				055FB00817F1E05B00E55421 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -103,6 +106,7 @@
 		055FB00617F1E05B00E55421 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				051AAC20180076ED00024C0B /* Security.framework */,
 				055FB00717F1E05B00E55421 /* Foundation.framework */,
 				055FB01517F1E05B00E55421 /* XCTest.framework */,
 				055FB01817F1E05B00E55421 /* UIKit.framework */,
@@ -415,6 +419,7 @@
 				055FB02917F1E05B00E55421 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		055FB02A17F1E05B00E55421 /* Build configuration list for PBXNativeTarget "ICNodeTests" */ = {
 			isa = XCConfigurationList;
@@ -423,6 +428,7 @@
 				055FB02C17F1E05B00E55421 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

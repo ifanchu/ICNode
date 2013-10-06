@@ -438,10 +438,10 @@
             // if this node is last child, change depthStatus[relativeDepth] to connectorNoMore
             [depthStatus replaceObjectAtIndex:relativeDepth withObject:connectorNoMore];
             // append this node with connectorLastChild
-            [line appendString:[NSString stringWithFormat:@"%@%@", connectorLastChild, [node.data description]]];
+            [line appendString:[NSString stringWithFormat:@"%@%@", connectorLastChild, node.printData]];
         }else{
             // if this is not last child, just append this node with connectorNormal
-            [line appendString:[NSString stringWithFormat:@"%@%@", connectorNormal, [node.data description]]];
+            [line appendString:[NSString stringWithFormat:@"%@%@", connectorNormal, node.printData]];
         }
         // append it to result and return
         [result appendFormat:@"%@\n", line];
