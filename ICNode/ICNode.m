@@ -231,7 +231,7 @@
 
 - (BOOL)addAsChild:(ICNode *)aNode
 {
-    if (!aNode || aNode.isRoot)
+    if (!aNode || aNode.isRoot || self == aNode)
         return NO;
     // check if aNode has parent, if yes, remove aNode from parent's children
     if (aNode.parent) {
@@ -245,7 +245,7 @@
 
 - (BOOL)addAsFirstChild:(ICNode *)aNode
 {
-    if(!self || !aNode || aNode.isRoot)
+    if(!self || !aNode || aNode.isRoot || self == aNode)
         return NO;
     aNode.indexOfParent = 0;
     aNode.parent = self;
@@ -270,7 +270,7 @@
 
 - (BOOL)addAsOlderSibling:(ICNode *)aNode
 {
-    if (self.isRoot || !aNode || aNode.isRoot)
+    if (self.isRoot || !aNode || aNode.isRoot || self == aNode)
         return NO;
     int index = self.indexOfParent;
     aNode.parent = self.parent;
@@ -332,8 +332,7 @@
     // remove nodeToMove from its parent children
     [nodeToMove detach];
     // add nodeToMove as a child to nodeToAppend
-    [nodeToAppend addAsChild:nodeToMove];
-    return YES;
+    return [nodeToAppend addAsChild:nodeToMove];
 }
 - (BOOL)moveUp
 {
@@ -342,8 +341,7 @@
     if (self.isRoot || prev.isRoot || !prev || !self)
         return NO;
     [self detach];
-    [prev addAsOlderSibling:self];
-    return YES;
+    return [prev addAsOlderSibling:self];
 }
 - (BOOL)moveDown
 {
@@ -352,8 +350,7 @@
         return NO;
     [self detach];
 
-    next.depth == self.depth ? [next addAsSibling:self]:[next addAsFirstChild:self];
-    return YES;
+    return next.depth == self.depth ? [next addAsSibling:self]:[next addAsFirstChild:self];
 }
 
 #pragma mark - indentation
@@ -363,8 +360,7 @@
         return NO;
     ICNode *aParent = self.parent;
     [self detach];
-    [aParent addAsSibling:self];
-    return YES;
+    return [aParent addAsSibling:self];
 }
 
 - (BOOL)rightIndent
