@@ -290,8 +290,8 @@
     int index = self.indexOfParent;
     aNode.parent = self.parent;
     aNode.indexOfParent = index+1;
-    [self.parent.children insertObject:aNode atIndex:index+1];
-    for (int i = index+1; i < self.parent.children.count; i++) {
+    [self.parent.children insertObject:aNode atIndex:aNode.indexOfParent];
+    for (int i = aNode.indexOfParent+1; i < self.parent.children.count; i++) {
         ICNode *node = (ICNode *)[self.parent.children objectAtIndex:i];
         node.indexOfParent++;
     }
@@ -346,15 +346,19 @@
     // return NO if moving a node to replace its children
     if ([fromNode contains:toNode]) return NO;
 
+    int fromIndex = [self indexOf:fromNode];
+    int toIndex = [self indexOf:toNode];
+    
     // detach fromNode from its parent
     [fromNode detach];
     // replace toNode with fromNode and push toNode back for 1 place in toNode's parent's children
     // if fromNode is moving up, insert into the location of toNode
     // if fromNode is moving down, insert after toNode
-    if ([self indexOf:fromNode] < [self indexOf:toNode]) {
-        return [toNode addAsOlderSibling:fromNode];
-    }else{
+    NSLog(@"%s - fromNode index: %d, toNode index: %d", __PRETTY_FUNCTION__, fromIndex, toIndex);
+    if (fromIndex < toIndex) {
         return [toNode addAsYoungerSibling:fromNode];
+    }else{
+        return [toNode addAsOlderSibling:fromNode];
     }
 }
 

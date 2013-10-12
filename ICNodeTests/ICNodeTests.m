@@ -491,12 +491,12 @@ int runs;
         [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"aftermove"];
         ICNode *current;
         if (fromIndex < toIndex) {
-            current = [toNode getOlderSibling];
-        }else{
             current = [toNode getYoungerSibling];
+        }else{
+            current = [toNode getOlderSibling];
         }
         // after moving, the location of toIndex will become fromNode
-        XCTAssertEqual(current, fromNode, @"current: %@, from: %@", current.printData, fromNode.printData);
+        XCTAssertEqual(current, fromNode, @"current: %@, expected: %@", current.printData, fromNode.printData);
     }
 }
 
