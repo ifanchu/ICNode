@@ -283,6 +283,21 @@
     return YES;
 }
 
+- (BOOL)addAsYoungerSibling:(ICNode *)aNode
+{
+    if (self.isRoot || !aNode || aNode.isRoot || self == aNode)
+        return NO;
+    int index = self.indexOfParent;
+    aNode.parent = self.parent;
+    aNode.indexOfParent = index+1;
+    [self.parent.children insertObject:aNode atIndex:index+1];
+    for (int i = index+1; i < self.parent.children.count; i++) {
+        ICNode *node = (ICNode *)[self.parent.children objectAtIndex:i];
+        node.indexOfParent++;
+    }
+    return YES;
+}
+
 #pragma mark - remove node from tree
 - (BOOL)removeAllChildrenFromIndex:(NSInteger)index
 {
@@ -317,23 +332,32 @@
 }
 
 #pragma mark - moving node
-- (BOOL)moveNodeFromIndex:(NSInteger)fromIndex toIndex:(NSInteger)toIndex
+- (BOOL)moveNodeFromNode:(ICNode *)fromNode toReplaceNode:(ICNode *)toNode
 {
-    if (![self checkIndexInBound:fromIndex] || ![self checkIndexInBound:toIndex])
-        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"ICNode moveNodeFromIndex: either fromIndex or toIndex is invalid" userInfo:nil];
-    if (fromIndex == toIndex)
-        return NO;
-    ICNode *nodeToMove = [self nodeAtIndex:fromIndex];
-    ICNode *nodeToAppend = [self nodeAtIndex:toIndex];
-    if (nodeToMove.isRoot)      // root can not be moved
-        return NO;
-    if ([nodeToMove contains:nodeToAppend])
-        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"ICNode moveNodeFromIndex: nodeToAppend is a child of nodeToMove" userInfo:nil];
-    // remove nodeToMove from its parent children
-    [nodeToMove detach];
-    // add nodeToMove as a child to nodeToAppend
-    return [nodeToAppend addAsChild:nodeToMove];
+    // return NO if either fromNode or toNode is nil
+    if (!fromNode || !toNode) return NO;
+    // return NO if either fromNode or toNode is root
+    // root can not be moved and can not be replaced
+    if (fromNode.isRoot || toNode.isRoot) return NO;
+    // return NO if moving to the same node
+    if (fromNode == toNode) return NO;
+    // return NO if either fromNode or toNode is not in self
+    if (![self contains:fromNode] || ![self contains:toNode]) return NO;
+    // return NO if moving a node to replace its children
+    if ([fromNode contains:toNode]) return NO;
+
+    // detach fromNode from its parent
+    [fromNode detach];
+    // replace toNode with fromNode and push toNode back for 1 place in toNode's parent's children
+    // if fromNode is moving up, insert into the location of toNode
+    // if fromNode is moving down, insert after toNode
+    if ([self indexOf:fromNode] < [self indexOf:toNode]) {
+        return [toNode addAsOlderSibling:fromNode];
+    }else{
+        return [toNode addAsYoungerSibling:fromNode];
+    }
 }
+
 - (BOOL)moveUp
 {
     ICNode *prev = self.getPreviousNode;

@@ -475,58 +475,28 @@ int runs;
     int countOfNode = root.countOfAllChildren;
     
     for (; runs>0; runs--) {
+        
         [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"beforemove"];
-        int fromIndex = [ICUnitTestHelper generateRandomIntWith:-20 withUpperBound:countOfNode];
-        int toIndex = [ICUnitTestHelper generateRandomIntWith:-20 withUpperBound:countOfNode];
+        int fromIndex = [ICUnitTestHelper generateRandomIntWith:0 withUpperBound:countOfNode];
+        int toIndex = [ICUnitTestHelper generateRandomIntWith:0 withUpperBound:countOfNode];
+        ICNode *fromNode = [root nodeAtIndex:fromIndex];
+        ICNode *toNode = [root nodeAtIndex:toIndex];
         
-        // check if index out of bound
-        if (fromIndex < 0 || fromIndex > countOfNode || toIndex < 0 || toIndex > countOfNode) {
-            XCTAssertThrowsSpecificNamed([root moveNodeFromIndex:fromIndex toIndex:toIndex], NSException, NSInvalidArgumentException, @"");
-            continue;
+        if (fromNode.isRoot || toNode.isRoot || fromNode == toNode || [fromNode contains:toNode]) {
+            XCTAssertFalse([root moveNodeFromNode:fromNode toReplaceNode:toNode], @"");
+            return;
         }
-        // check if fromIndex == toIndex
-        if (fromIndex == toIndex) {
-            XCTAssertFalse([root moveNodeFromIndex:fromIndex toIndex:toIndex], @"fromIndex is equal to toIndex which will do nothing. %d -> %d", fromIndex, toIndex);
-            continue;
-        }
-        ICNode *nodeToMove = [root nodeAtIndex:fromIndex];
-        ICNode *parentOfNodeToMove = nodeToMove.parent;
-        int oldImmediateChildrenCountOfParentOfNodeToMove = parentOfNodeToMove.countOfImmediateChildren;
-        ICNode *nodeToAppend = [root nodeAtIndex:toIndex];
-        int oldImmediateChildrenCountOfNodeToAppend = nodeToAppend.countOfImmediateChildren;
-        
-        NSString *debug = [NSString stringWithFormat:@"nodeToMove(%d): %@, nodeToAppend(%d): %@", fromIndex, [nodeToMove description], toIndex, [nodeToAppend description]];
-        
-        NSLog(@"%@", debug);
-        
-        // check moving root node
-        if (nodeToMove.isRoot) {
-            XCTAssertFalse([root moveNodeFromIndex:fromIndex toIndex:toIndex], @"should return NO if toIndex is root. %@", debug);
-            continue;
-        }
-        if ([nodeToMove contains:nodeToAppend]) {
-            XCTAssertThrowsSpecificNamed([root moveNodeFromIndex:fromIndex toIndex:toIndex], NSException, NSInvalidArgumentException, @"Can not move node to its child");
-            continue;
-        }
-        // general validation
-        XCTAssertNoThrow([root moveNodeFromIndex:fromIndex toIndex:toIndex], @"Should not throw any exception. %@", debug);
-        
-        int newImmediateChildrenCountOfParentOfNodeToMove = parentOfNodeToMove.countOfImmediateChildren;
-        int newImmediateChildrenCountOfNodeToAppend = nodeToAppend.countOfImmediateChildren;
-
-        
-        XCTAssertTrue([nodeToAppend contains:nodeToMove], @"%@", debug);
-        XCTAssertEqualObjects([nodeToAppend getLastImmediateChild], nodeToMove, @"After moving, nodeToAppend's last immediate child is nodeToMove. %@", debug);
-        XCTAssertFalse(nodeToAppend.isLeaf, @"After moving nodeToMove to nodeToAppend, nodeToAppend must not be a leaf. %@", debug);
-        if (parentOfNodeToMove == nodeToAppend){
-            XCTAssertEqual(oldImmediateChildrenCountOfParentOfNodeToMove, newImmediateChildrenCountOfParentOfNodeToMove, @"%@", debug);
-            XCTAssertEqual(oldImmediateChildrenCountOfNodeToAppend, newImmediateChildrenCountOfNodeToAppend, @"%@", debug);
-        }else{
-            XCTAssertEqual(oldImmediateChildrenCountOfParentOfNodeToMove - 1, newImmediateChildrenCountOfParentOfNodeToMove, @"%@", debug);
-            XCTAssertEqual(oldImmediateChildrenCountOfNodeToAppend + 1, newImmediateChildrenCountOfNodeToAppend, @"%@", debug);
-        }
-        
+        XCTAssertTrue([root moveNodeFromNode:fromNode toReplaceNode:toNode], @"");
+        NSLog(@"%s - from: %@, to: %@", __PRETTY_FUNCTION__, fromNode.printData, toNode.printData);
         [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"aftermove"];
+        ICNode *current;
+        if (fromIndex < toIndex) {
+            current = [toNode getOlderSibling];
+        }else{
+            current = [toNode getYoungerSibling];
+        }
+        // after moving, the location of toIndex will become fromNode
+        XCTAssertEqual(current, fromNode, @"current: %@, from: %@", current.printData, fromNode.printData);
     }
 }
 
