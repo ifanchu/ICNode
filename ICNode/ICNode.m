@@ -13,7 +13,32 @@
 
 }
 @synthesize data, parent, children, indexOfParent;
-
+#pragma mark - NSCoding
+static NSString * cData = @"cData";
+static NSString * cParent = @"cParent";
+static NSString * cChildren = @"cChildren";
+static NSString * cIndexOfParent = @"cIndexOfParent";
+static NSString * cIsRoot = @"cIsRoot";
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [aCoder encodeObject:self.data forKey:cData];
+    [aCoder encodeObject:self.parent forKey:cParent];
+    [aCoder encodeObject:self.children forKey:cChildren];
+    [aCoder encodeInt:self.indexOfParent forKey:cIndexOfParent];
+    [aCoder encodeBool:self.isRoot forKey:cIsRoot];
+}
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super init];
+    if (self) {
+        self.data = [[aDecoder decodeObjectForKey:cData] copy];
+        self.parent = [aDecoder decodeObjectForKey:cParent];
+        self.children = [[aDecoder decodeObjectForKey:cChildren] mutableCopy];
+        self.indexOfParent = [aDecoder decodeIntForKey:cIndexOfParent];
+        self.isRoot = [aDecoder decodeBoolForKey:cIsRoot];
+    }
+    return self;
+}
 #pragma mark - Initializers
 // designated initializer
 - (id)initWithData:(id)aData withParent:(ICNode *)aParent isRoot:(BOOL)isroot

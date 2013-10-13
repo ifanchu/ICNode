@@ -21,7 +21,7 @@ count
 
 */
 
-@interface ICNode : NSObject
+@interface ICNode : NSObject <NSCoding>
 {
 
 }
