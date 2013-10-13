@@ -31,7 +31,7 @@ static NSString * cIsRoot = @"cIsRoot";
 {
     self = [super init];
     if (self) {
-        self.data = [[aDecoder decodeObjectForKey:cData] copy];
+        self.data = [aDecoder decodeObjectForKey:cData];
         self.parent = [aDecoder decodeObjectForKey:cParent];
         self.children = [[aDecoder decodeObjectForKey:cChildren] mutableCopy];
         self.indexOfParent = [aDecoder decodeIntForKey:cIndexOfParent];
