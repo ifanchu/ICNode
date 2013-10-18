@@ -18,6 +18,12 @@ count
  1. All the index mentioned in below methods is relative to the current ICNode.
  2. For any traversal operation, use DFS pre-order traversal to mimic array functionality
  3. Any adding and moving should not affect the existing order. For example, moving a node to its sibling means move that node to be as its sibling's last child.
+ 
+ Equality:
+    We can not determine the equality by simply comparing each iVar in two nodes
+    because the 2 nodes could have the same parent, and exactly the same children
+    which is 2 identical subtree under a common ancestor.
+    The only way to distinguish 2 nodes in a tree is to determine its indexFromRoot
 
 */
 
@@ -121,6 +127,7 @@ count
 - (ICNode *)nodeAtIndex: (NSInteger)index;
 /*
  Return the index of this node relative to its root, if any
+ The return value can be used to identify a node in root
  */
 // @return index relative to root
 - (NSInteger)indexFromRoot;
