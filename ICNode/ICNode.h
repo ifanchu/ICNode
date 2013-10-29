@@ -27,7 +27,7 @@ count
 
 */
 
-@interface ICNode : NSObject <NSCoding>
+@interface ICNode : NSObject <NSCoding, NSCopying>
 {
 
 }
@@ -289,4 +289,8 @@ root
  This method is to validate the parent-chidren structure of this node. This basically validates that in each node, the children has correct indexOfParent
  */
 - (BOOL)validate;
+/*
+ * Add all the children from aNode to self as last child
+ */
+- (void)mergeWithNode:(ICNode *)aNode;
 @end

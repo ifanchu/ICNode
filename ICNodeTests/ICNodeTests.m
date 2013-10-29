@@ -53,7 +53,7 @@ int runs;
     root = [[ICNode alloc] initAsRootNode];
     tree = [[ICNode alloc] initAsRootNode];
     [self generateSampleTree];
-    runs = 500;
+    runs = 50;
 }
 
 - (void)tearDown
@@ -646,6 +646,37 @@ int runs;
     [ICUnitTestHelper writeStringToDesktop:root.printTree toFileName:@"afterTestRootAsChild"];
 }
 
+#pragma mark - test merge
+- (void)testCopying
+{
+    ICNode *a = [self getRandomRoot:10];
+    ICNode *b = [a copy];
+    for (ICNode *node in a.flatThisNode) {
+        XCTAssertFalse([b contains:node], @"");
+    }
+    XCTAssertEqual(a.countOfAllChildren, b.countOfAllChildren, @"");
+    for (int i=0; i<a.flatThisNode.count; i++) {
+        ICNode *a1 = [a nodeAtIndex:i];
+        ICNode *b1 = [b nodeAtIndex:i];
+        XCTAssertTrue([((NSString *)a1.data) isEqualToString:((NSString *)b1.data)], @"");
+        XCTAssertEqual(a1.countOfAllChildren, b1.countOfAllChildren, @"");
+        XCTAssertEqual(a1.indexOfParent, b1.indexOfParent, @"");
+        XCTAssertFalse(a1==b1, @"");
+        if (!a1.isRoot) {
+            XCTAssertTrue([((NSString *)a1.parent.data) isEqualToString:((NSString *)b1.parent.data)], @"");
+        }
+    }
+}
+- (void)testMergeNode
+{
+    ICNode *a = [self getRandomRoot:10];
+    int countOfA = a.countOfAllChildren;
+    ICNode *b = [self getRandomRoot:10];
+    int countOfB = b.countOfAllChildren;
+    [b mergeWithNode:a];
+    XCTAssertEqual(b.countOfAllChildren, countOfA + countOfB, @"");
+}
+
 #pragma mark - test helper
 - (void)testValidate
 {
@@ -716,6 +747,66 @@ int runs;
     [node12 addAsChild:node14];
     ICNode *node15 = [[ICNode alloc] initWithData:@"node15"];
     [tree addAsChild:node15];
+}
+
+- (ICNode *)getRandomRoot:(int)howManyNodes
+{
+    ICNode *_root = [[ICNode alloc] initAsRootNode];
+    int addruns = howManyNodes;
+    
+    for (; addruns>0; addruns--) {
+        // choose 1 node from candidate array to be the root of this node
+        // this could be root
+        ICNode *parent = (ICNode *)[_root.flatThisNode objectAtIndex:(arc4random()%_root.flatThisNode.count)];
+        int indexOfParent = [_root indexOf:parent];      // index of the parent relative to root
+        
+        ICNode *thisNode = [[ICNode alloc] initWithData:[ICUnitTestHelper getRandomString:10]];
+        BOOL result;
+        
+        int which = arc4random()%6;
+        NSString *ops;
+        switch (which) {
+            case ADD_AS_CHILD_TO_INDEX:     // - (NSInteger)addAsChildToIndex:(NSInteger)index withNode:(ICNode *)aNode
+            {
+                result = [_root addAsChildToIndex:indexOfParent withNode:thisNode];
+                ops = @"ADD_AS_CHILD_TO_INDEX";
+                break;
+            }
+            case ADD_AS_CHILD_TO_NODE:     // - (NSInteger)addAsChildToNode:(ICNode *)aParent withNode:(ICNode *)aNode
+            {
+                result = [_root addAsChildToNode:parent withNode:thisNode];
+                ops = @"ADD_AS_CHILD_TO_NODE";
+                break;
+            }
+            case ADD_AS_SIBLING_TO_INDEX:     // - (NSInteger)addAsSiblingToIndex:(NSInteger)index withNode:(ICNode *)aNode
+            {
+                result = [_root addAsSiblingToIndex:indexOfParent withNode:thisNode];
+                ops = @"ADD_AS_SIBLING_TO_INDEX";
+                break;
+            }
+            case ADD_AS_SIBLING_TO_NODE:     // - (NSInteger)addAsSiblingToNode:(ICNode *)targetNode withNode:(ICNode *)aNode
+            {
+                result = [_root addAsSiblingToNode:parent withNode:thisNode];
+                ops = @"ADD_AS_SIBLING_TO_NODE";
+                break;
+            }
+            case ADD_AS_CHILD:     // - (void)addAsChild:(ICNode *)aNode
+            {
+                result = [parent addAsChild:thisNode];
+                ops = @"ADD_AS_CHILD";
+                break;
+            }
+            case ADD_AS_SIBLING:     // - (void)addAsSibling:(ICNode *)aNode
+            {
+                result = [parent addAsSibling:thisNode];
+                ops = @"ADD_AS_SIBLING";
+                break;
+            }
+            default:
+                break;
+        }
+    }
+    return _root;
 }
 
 - (void)generateRandomRoot:(int)howManyNodes

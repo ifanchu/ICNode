@@ -13,12 +13,13 @@
 
 }
 @synthesize data, parent, children, indexOfParent;
-#pragma mark - NSCoding
+
 static NSString * cData = @"cData";
 static NSString * cParent = @"cParent";
 static NSString * cChildren = @"cChildren";
 static NSString * cIndexOfParent = @"cIndexOfParent";
 static NSString * cIsRoot = @"cIsRoot";
+#pragma mark - NSCoding
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
     [aCoder encodeObject:self.data forKey:cData];
@@ -38,6 +39,13 @@ static NSString * cIsRoot = @"cIsRoot";
         self.isRoot = [aDecoder decodeBoolForKey:cIsRoot];
     }
     return self;
+}
+#pragma mark - NSCopying protocol
+- (id)copyWithZone:(NSZone *)zone
+{
+    NSData *origData = [NSKeyedArchiver archivedDataWithRootObject:self];
+    id copy = [NSKeyedUnarchiver unarchiveObjectWithData:origData];
+    return copy;
 }
 #pragma mark - Initializers
 // designated initializer
@@ -533,5 +541,19 @@ static NSString * cIsRoot = @"cIsRoot";
         @throw [NSException exceptionWithName:NSInvalidArgumentException reason:reason userInfo:nil];
     }
     indexOfParent = index;
+}
+
+- (void)mergeWithNode:(ICNode *)aNode
+{
+    // make sure self and aNode does not collide
+    if (self == aNode || self == nil || aNode == nil || [self contains:aNode] || [aNode contains:self]) {
+        return;
+    }
+    for (ICNode *node in aNode.children) {
+        if (node){
+            [self addAsChild:[node copy]];
+        }
+    }
+    aNode = nil;
 }
 @end
